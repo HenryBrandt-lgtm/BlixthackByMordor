@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlixthackByMordor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260903121756_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260903124645_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
