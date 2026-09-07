@@ -1,4 +1,5 @@
 using BlixthackByMordor.Data;
+using BlixthackByMordor.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlixthackByMordor
@@ -8,6 +9,8 @@ namespace BlixthackByMordor
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddScoped<ThreadService>();
 
             builder.Services.AddControllersWithViews();
 
@@ -34,8 +37,8 @@ namespace BlixthackByMordor
 
             app.MapStaticAssets();
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
