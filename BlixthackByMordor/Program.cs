@@ -19,6 +19,7 @@ namespace BlixthackByMordor
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 )
             );
+            builder.Services.AddScoped<CategoryService>();
 
             var app = builder.Build();
 

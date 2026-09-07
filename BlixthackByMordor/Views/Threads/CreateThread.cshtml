@@ -1,0 +1,10 @@
+﻿@model List<CategoryModel>
+
+ <h1>Skapa ny tråd</h1>
+ <select>
+     <option value="">Välj kategori</option>
+     @foreach(var category in Model)
+    {
+        <option value="@category.Id">@category.Name</option>
+    }
+</select>
