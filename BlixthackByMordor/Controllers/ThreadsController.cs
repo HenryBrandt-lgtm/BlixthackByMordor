@@ -1,18 +1,15 @@
-<<<<<<< HEAD
-﻿using BlixthackByMordor.Data;
+
+using BlixthackByMordor.Data;
+using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
-=======
-﻿using BlixthackByMordor.Services;
->>>>>>> 64a73c4 (feat: Add drop down menu for Categorys.)
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlixthackByMordor.Controllers
 {
-<<<<<<< HEAD
-    
-=======
+
     public class ThreadsController(CategoryService categoryService, ThreadService threadService) : Controller
->>>>>>> 64a73c4 (feat: Add drop down menu for Categorys.)
+
     {
         public IActionResult Index()
         {
@@ -37,6 +34,25 @@ namespace BlixthackByMordor.Controllers
             var categories = await categoryService.GetCategories();
 
             return View(categories);
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateThread(int categoryId, string title, string content)
+        {
+            var thread = new ThreadModel
+            {
+                CategoryId = categoryId,
+                Title = title,
+                Content = content,
+
+                //KOD NEDAN SKALL BORT NÄR VI GJORT USER DELEN
+                UserId = 1
+            };
+
+            await threadService.CreateThread(thread);
+
+            return RedirectToAction("Index");
         }
     }
 }
