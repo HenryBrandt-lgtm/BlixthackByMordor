@@ -1,10 +1,23 @@
 ﻿@model List<CategoryModel>
 
  <h1>Skapa ny tråd</h1>
- <select>
+
+<form method="post">
+
+ <select name="CategoryId" required>    
+         
      <option value="">Välj kategori</option>
+
      @foreach(var category in Model)
     {
         <option value="@category.Id">@category.Name</option>
     }
 </select>
+
+<input type="text" name="Title" placeholder="Titel" required/>
+<textarea name="Content" placeholder="Skriv ditt inlägg..." required></textarea>
+
+<button type="sumbit">Skapa tråd</button>
+
+
+</form>
