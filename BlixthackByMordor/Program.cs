@@ -33,7 +33,16 @@ namespace BlixthackByMordor
 
             builder.Services.AddScoped<CategoryService>();
 
+            builder.Services.AddScoped<DataInitializer>();
+
+
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var initializer = scope.ServiceProvider.GetRequiredService<DataInitializer>();
+                initializer.MigrateAndSeedData();
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
