@@ -2,7 +2,7 @@
 using BlixthackByMordor.Data;
 using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlixthackByMordor.Controllers
@@ -28,7 +28,7 @@ namespace BlixthackByMordor.Controllers
             return View(thread);
         }
 
-
+        [Authorize]
         public async Task<IActionResult> CreateThread()
         {
             var categories = await categoryService.GetCategories();
