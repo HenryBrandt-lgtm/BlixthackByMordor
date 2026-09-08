@@ -1,5 +1,7 @@
 using BlixthackByMordor.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using BlixthackByMordor.Services;
 
 namespace BlixthackByMordor
 {
@@ -16,6 +18,16 @@ namespace BlixthackByMordor
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 )
             );
+            builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddAuthorization();
+
 
             var app = builder.Build();
 
@@ -30,6 +42,7 @@ namespace BlixthackByMordor
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
