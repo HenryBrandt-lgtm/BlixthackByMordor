@@ -18,13 +18,13 @@ namespace BlixthackByMordor
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 )
             );
-            builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    });
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Users/Login";
+                    options.AccessDeniedPath = "/Users/AccessDenied";
+                });
+
             builder.Services.AddScoped<UserService>();
             builder.Services.AddAuthorization();
 

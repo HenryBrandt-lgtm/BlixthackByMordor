@@ -26,12 +26,43 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        </li>
+                        
                         <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Register">REg</a>
                         </li>
                     </ul>
                 </div>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span>
+                        Hej @User.Identity.Name!
+                    </span>
+
+                    
+
+                    <form asp-controller="Users"
+                          asp-action="Logout"
+                          method="post"
+                          style="display:inline">
+
+                        <button type="submit">
+                            Logga ut
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Users"
+                       asp-action="Login">
+                        Logga in     
+                    </a>
+
+                    <a asp-controller="Users"
+                       asp-action="Register">
+                        Registrera
+                    </a>
+                }
             </div>
         </nav>
     </header>
@@ -40,6 +71,7 @@
             @RenderBody()
         </main>
     </div>
+
 
     <footer class="border-top footer text-muted">
         <div class="container">
