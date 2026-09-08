@@ -4,6 +4,7 @@ using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BlixthackByMordor.Controllers
 {
@@ -40,6 +41,14 @@ namespace BlixthackByMordor.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateThread(int categoryId, string title, string content)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) {
+                return Unauthorized();
+            
+            }
+
+
+
             var thread = new ThreadModel
             {
                 CategoryId = categoryId,
@@ -47,8 +56,7 @@ namespace BlixthackByMordor.Controllers
                 Content = content,
                 CreatedAt = DateTime.UtcNow,
 
-                //KOD NEDAN SKALL BORT NÄR VI GJORT USER DELEN
-                UserId = 1
+                UserId = int.Parse(userId)
             };
 
             await threadService.CreateThread(thread);
