@@ -45,6 +45,7 @@ namespace BlixthackByMordor.Controllers
                 CategoryId = categoryId,
                 Title = title,
                 Content = content,
+                CreatedAt = DateTime.UtcNow,
 
                 //KOD NEDAN SKALL BORT NÄR VI GJORT USER DELEN
                 UserId = 1
