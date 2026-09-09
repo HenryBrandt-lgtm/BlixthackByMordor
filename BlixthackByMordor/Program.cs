@@ -2,7 +2,6 @@ using BlixthackByMordor.Data;
 using BlixthackByMordor.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using BlixthackByMordor.Services;
 
 namespace BlixthackByMordor
 {
@@ -13,6 +12,7 @@ namespace BlixthackByMordor
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<ThreadService>();
+            builder.Services.AddScoped<AnswerService>();
 
             builder.Services.AddControllersWithViews();
 

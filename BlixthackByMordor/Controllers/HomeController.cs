@@ -1,4 +1,3 @@
-using BlixthackByMordor.Data;
 using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -6,11 +5,11 @@ using System.Diagnostics;
 
 namespace BlixthackByMordor.Controllers
 {
-    public class HomeController(ApplicationDbContext db) : Controller
+    public class HomeController(ThreadService threadService) : Controller
     {
         public async Task<IActionResult> Index()
         {
-            var threads = await new ThreadService(db).GetLatestThreadsPerCategory();
+            var threads = await threadService.GetLatestThreadsPerCategory();
             return View(threads);
         }
 

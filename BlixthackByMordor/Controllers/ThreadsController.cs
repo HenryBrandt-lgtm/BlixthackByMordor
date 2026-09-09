@@ -1,5 +1,3 @@
-
-using BlixthackByMordor.Data;
 using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,9 +6,7 @@ using System.Security.Claims;
 
 namespace BlixthackByMordor.Controllers
 {
-
     public class ThreadsController(CategoryService categoryService, ThreadService threadService) : Controller
-
     {
         public IActionResult Index()
         {
@@ -35,19 +31,16 @@ namespace BlixthackByMordor.Controllers
             var categories = await categoryService.GetCategories();
 
             return View(categories);
-
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateThread(int categoryId, string title, string content)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) {
+            if (userId == null)
+            {
                 return Unauthorized();
-            
             }
-
-
 
             var thread = new ThreadModel
             {
@@ -55,7 +48,6 @@ namespace BlixthackByMordor.Controllers
                 Title = title,
                 Content = content,
                 CreatedAt = DateTime.UtcNow,
-
                 UserId = int.Parse(userId)
             };
 
