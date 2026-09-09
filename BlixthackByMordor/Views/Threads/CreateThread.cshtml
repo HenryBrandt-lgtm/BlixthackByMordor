@@ -1,0 +1,67 @@
+﻿@model List<CategoryModel>
+@{
+    ViewData["Title"] = "New thread";
+}
+
+<div class="thread-page">
+    <article class="thread-panel">
+        <header class="thread-panel__header">
+            <p class="thread-panel__category">New thread</p>
+            <p class="thread-panel__byline">Posting as @@@User.Identity!.Name</p>
+        </header>
+
+        <form asp-controller="Threads"
+              asp-action="CreateThread"
+              method="post"
+              class="thread-compose">
+            <div class="thread-compose__field">
+                <label class="thread-compose__label" for="categoryId">Category</label>
+                <select id="categoryId"
+                        name="categoryId"
+                        class="form-select thread-compose__control"
+                        required>
+                    <option value="">Choose a category</option>
+                    @foreach (var category in Model)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="thread-compose__field">
+                <label class="thread-compose__label" for="title">Title</label>
+                <input id="title"
+                       name="title"
+                       type="text"
+                       class="form-control thread-compose__control"
+                       minlength="10"
+                       maxlength="100"
+                       required
+                       placeholder="Give your thread a clear title" />
+                <p class="thread-compose__hint">10–100 characters</p>
+            </div>
+
+            <div class="thread-compose__field">
+                <label class="thread-compose__label" for="content">Post</label>
+                <textarea id="content"
+                          name="content"
+                          class="form-control thread-compose__control thread-compose__textarea"
+                          rows="8"
+                          minlength="1"
+                          maxlength="1000"
+                          required
+                          placeholder="Write the opening post..."></textarea>
+                <p class="thread-compose__hint">Up to 1000 characters</p>
+            </div>
+
+            <div class="thread-compose__actions">
+                <button type="submit" class="btn btn-primary">Create thread</button>
+                <a class="btn btn-outline-light answer-gate__secondary"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </article>
+</div>

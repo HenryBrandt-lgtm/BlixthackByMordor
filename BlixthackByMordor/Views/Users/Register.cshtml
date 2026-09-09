@@ -1,0 +1,79 @@
+﻿@model BlixthackByMordor.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="thread-page auth-page">
+    <article class="thread-panel">
+        <header class="thread-panel__header">
+            <p class="thread-panel__category">Register</p>
+        </header>
+
+        <form asp-controller="Users"
+              asp-action="Register"
+              method="post"
+              class="thread-compose">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+            <div asp-validation-summary="ModelOnly" class="thread-compose__errors"></div>
+
+            <div class="thread-compose__field">
+                <label asp-for="Username" class="thread-compose__label"></label>
+                <input asp-for="Username"
+                       class="form-control thread-compose__control"
+                       autocomplete="username"
+                       maxlength="50"
+                       placeholder="Choose a username" />
+                <span asp-validation-for="Username" class="thread-compose__field-error"></span>
+            </div>
+
+            <div class="thread-compose__field">
+                <label asp-for="Email" class="thread-compose__label"></label>
+                <input asp-for="Email"
+                       class="form-control thread-compose__control"
+                       autocomplete="email"
+                       placeholder="you@example.com" />
+                <span asp-validation-for="Email" class="thread-compose__field-error"></span>
+            </div>
+
+            <div class="thread-compose__field">
+                <label asp-for="Password" class="thread-compose__label"></label>
+                <input asp-for="Password"
+                       type="password"
+                       class="form-control thread-compose__control"
+                       autocomplete="new-password"
+                       minlength="6"
+                       placeholder="At least 6 characters" />
+                <span asp-validation-for="Password" class="thread-compose__field-error"></span>
+            </div>
+
+            <div class="thread-compose__field">
+                <label asp-for="ConfirmPassword" class="thread-compose__label"></label>
+                <input asp-for="ConfirmPassword"
+                       type="password"
+                       class="form-control thread-compose__control"
+                       autocomplete="new-password"
+                       placeholder="Repeat your password" />
+                <span asp-validation-for="ConfirmPassword" class="thread-compose__field-error"></span>
+            </div>
+
+            <div class="thread-compose__actions">
+                <button type="submit" class="btn btn-primary">Register</button>
+                <a class="btn btn-outline-light answer-gate__secondary"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+        <p class="auth-page__footer">
+            Already have an account?
+            <a asp-controller="Users"
+               asp-action="Login"
+               asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                Log in
+            </a>
+        </p>
+    </article>
+</div>
