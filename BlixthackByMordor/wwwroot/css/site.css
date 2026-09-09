@@ -95,6 +95,20 @@ body > .container {
   width: 100%;
 }
 
+body > .container:has(.auth-page) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body > .container:has(.auth-page) main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 0;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem var(--background), 0 0 0 0.25rem var(--ring);
 }
@@ -619,7 +633,9 @@ a {
 }
 
 .auth-page {
+  width: 100%;
   max-width: 28rem;
+  margin: 0;
 }
 
 .thread-compose__errors.validation-summary-valid {
