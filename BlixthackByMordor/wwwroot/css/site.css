@@ -514,6 +514,63 @@ a {
   border-color: var(--border);
 }
 
+.thread-compose {
+  padding: 1.35rem 1.25rem 1.5rem;
+}
+
+.thread-compose__field {
+  margin-bottom: 1.15rem;
+}
+
+.thread-compose__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.thread-compose__hint {
+  margin: 0.4rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+.thread-compose__control,
+.thread-compose__control:focus,
+.thread-compose__control:focus-visible {
+  color: var(--foreground);
+  background-color: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.thread-compose__control:focus,
+.thread-compose__control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 0.1rem var(--background), 0 0 0 0.25rem var(--ring);
+}
+
+.thread-compose__control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.thread-compose__control option {
+  color: var(--foreground);
+  background-color: var(--card);
+}
+
+.thread-compose__textarea {
+  min-height: 10rem;
+  resize: vertical;
+}
+
+.thread-compose__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
 .footer {
   color: var(--muted-foreground);
   border-top-color: var(--border);

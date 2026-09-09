@@ -32,7 +32,8 @@ namespace BlixthackByMordor.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("/Threads/Create")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateThread(int categoryId, string title, string content)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
