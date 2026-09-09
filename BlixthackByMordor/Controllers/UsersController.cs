@@ -26,6 +26,8 @@ namespace BlixthackByMordor.Controllers
         }
 
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -40,7 +42,7 @@ namespace BlixthackByMordor.Controllers
             {
                 ModelState.AddModelError(
                     "Email",
-                    "Det finns redan ett konto med denna e-postadress."
+                    "An account with this email already exists."
                 );
 
                 return View(model);
@@ -56,7 +58,7 @@ namespace BlixthackByMordor.Controllers
             {
                 ModelState.AddModelError(
                     "",
-                    "Kunde inte skapa kontot."
+                    "Could not create the account."
                 );
 
                 return View(model);

@@ -20,6 +20,7 @@ namespace BlixthackByMordor.ViewModels
 
         [Required]
         [Compare("Password")]
+        [Display(Name = "Confirm password")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
