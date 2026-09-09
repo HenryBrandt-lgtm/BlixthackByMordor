@@ -33,38 +33,33 @@
                     }
                 </ul>
             </div>
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <span>
-                    Hej @User.Identity.Name!
-                </span>
-
-
-                <form asp-controller="Users"
-                      asp-action="Logout"
-                      method="post"
-                      style="display:inline">
-
-                    <button type="submit">
-                        Logga ut
-                    </button>
-
-                </form>
-            }
-            else
-            {
-                <a asp-controller="Users"
-                   asp-action="Login">
-                    Logga in
-                </a>
-
-                <p class="d-flex align-items-center" style="margin: 0;">&nbsp;/&nbsp;</p>
-
-                <a asp-controller="Users"
-                   asp-action="Register">
-                    Registrera
-                </a>
-            }
+            <div class="site-nav__auth">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="site-nav__greeting">Hi @(User.Identity.Name)</span>
+                    <form asp-controller="Users"
+                          asp-action="Logout"
+                          method="post"
+                          class="site-nav__logout">
+                        <button type="submit" class="btn btn-outline-light site-nav__btn">
+                            Log out
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-outline-light site-nav__btn"
+                       asp-controller="Users"
+                       asp-action="Login">
+                        Log in
+                    </a>
+                    <a class="btn btn-primary site-nav__btn"
+                       asp-controller="Users"
+                       asp-action="Register">
+                        Register
+                    </a>
+                }
+            </div>
         </div>
     </nav>
 </header>
@@ -81,7 +76,7 @@
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/site.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

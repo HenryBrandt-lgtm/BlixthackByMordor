@@ -120,6 +120,46 @@ a {
   color: var(--foreground);
 }
 
+.site-nav__auth {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: 0.75rem;
+}
+
+.site-nav__greeting {
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.site-nav__logout {
+  display: inline;
+  margin: 0;
+}
+
+.site-nav__btn {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  border-radius: var(--radius);
+}
+
+.site-nav__btn.btn-outline-light {
+  color: var(--foreground);
+  background-color: transparent;
+  border-color: var(--border);
+}
+
+.site-nav__btn.btn-outline-light:hover,
+.site-nav__btn.btn-outline-light:focus-visible {
+  color: var(--accent-foreground);
+  background-color: var(--accent);
+  border-color: var(--border);
+}
+
 .card {
   background-color: var(--card);
   color: var(--card-foreground);
