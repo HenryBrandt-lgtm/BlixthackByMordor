@@ -92,7 +92,7 @@ namespace BlixthackByMordor.Controllers
             {
                 ModelState.AddModelError(
                     "",
-                    "Fel e-postadress eller lösenord."
+                    "Wrong email or password."
                 );
 
                 return View(model);

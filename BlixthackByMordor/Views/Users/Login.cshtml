@@ -1,47 +1,58 @@
 ﻿@model BlixthackByMordor.ViewModels.LoginViewModel
-
 @{
-    ViewData["Title"] = "Logga in";
+    ViewData["Title"] = "Log in";
 }
 
-<h1>Logga in</h1>
+<div class="thread-page auth-page">
+    <article class="thread-panel">
+        <header class="thread-panel__header">
+            <p class="thread-panel__category">Log in</p>
+        </header>
 
-<form asp-controller="Users"
-      asp-action="Login"
-      method="post">
-    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+        <form asp-controller="Users"
+              asp-action="Login"
+              method="post"
+              class="thread-compose">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
-    <div asp-validation-summary="ModelOnly"></div>
+            <div asp-validation-summary="ModelOnly" class="thread-compose__errors"></div>
 
-    <div>
-        <label asp-for="Email"></label>
+            <div class="thread-compose__field">
+                <label asp-for="Email" class="thread-compose__label"></label>
+                <input asp-for="Email"
+                       class="form-control thread-compose__control"
+                       autocomplete="email"
+                       placeholder="you@example.com" />
+                <span asp-validation-for="Email" class="thread-compose__field-error"></span>
+            </div>
 
-        <input asp-for="Email" />
+            <div class="thread-compose__field">
+                <label asp-for="Password" class="thread-compose__label"></label>
+                <input asp-for="Password"
+                       type="password"
+                       class="form-control thread-compose__control"
+                       autocomplete="current-password"
+                       placeholder="Your password" />
+                <span asp-validation-for="Password" class="thread-compose__field-error"></span>
+            </div>
 
-        <span asp-validation-for="Email"></span>
-    </div>
+            <div class="thread-compose__actions">
+                <button type="submit" class="btn btn-primary">Log in</button>
+                <a class="btn btn-outline-light answer-gate__secondary"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Cancel
+                </a>
+            </div>
+        </form>
 
-    <div>
-        <label asp-for="Password"></label>
-
-        <input asp-for="Password"
-               type="password" />
-
-        <span asp-validation-for="Password"></span>
-    </div>
-
-    <button type="submit">
-        Logga in
-    </button>
-
-</form>
-
-<p>
-    Har du inget konto?
-
-    <a asp-controller="Users"
-       asp-action="Register"
-       asp-route-returnUrl="@ViewData["ReturnUrl"]">
-        Registrera
-    </a>
-</p>
+        <p class="auth-page__footer">
+            No account yet?
+            <a asp-controller="Users"
+               asp-action="Register"
+               asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                Register
+            </a>
+        </p>
+    </article>
+</div>
