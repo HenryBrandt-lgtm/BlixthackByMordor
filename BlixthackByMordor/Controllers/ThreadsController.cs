@@ -17,15 +17,13 @@ namespace BlixthackByMordor.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var thread = await threadService.GetThreadById(id);
-            if (thread == null)
-            {
-                return NotFound();
-            }
+            if (thread == null) return NotFound();
 
             return View(thread);
         }
 
         [Authorize]
+        [HttpGet("/Threads/Create")]
         public async Task<IActionResult> CreateThread()
         {
             var categories = await categoryService.GetCategories();
@@ -33,14 +31,12 @@ namespace BlixthackByMordor.Controllers
             return View(categories);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateThread(int categoryId, string title, string content)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            if (userId == null) return Unauthorized();
 
             var thread = new ThreadModel
             {
