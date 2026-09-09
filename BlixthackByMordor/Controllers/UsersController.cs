@@ -19,14 +19,17 @@ namespace BlixthackByMordor.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string? returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
 
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -59,21 +62,24 @@ namespace BlixthackByMordor.Controllers
                 return View(model);
             }
             //Add a succed view
-            return RedirectToAction(nameof(Login));
+            return RedirectToAction(nameof(Login), new { returnUrl });
         }
 
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(
-        LoginViewModel model)
+        LoginViewModel model, string? returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -106,7 +112,7 @@ namespace BlixthackByMordor.Controllers
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme, princpal);
 
-            return RedirectToAction("Index","Home");
+            return RedirectAfterLogin(returnUrl);
 
 
         }
@@ -128,6 +134,18 @@ namespace BlixthackByMordor.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        private IActionResult RedirectAfterLogin(string? returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl)
+                && Url.IsLocalUrl(returnUrl)
+                && !returnUrl.StartsWith("/Answers", StringComparison.OrdinalIgnoreCase))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
 

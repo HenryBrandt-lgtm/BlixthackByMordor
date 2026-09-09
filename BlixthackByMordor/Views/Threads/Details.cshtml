@@ -2,64 +2,109 @@
 @{
     ViewData["Title"] = Model.Title;
     var answers = Model.Answers?.ToList() ?? [];
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var returnUrl = Url.Action("Details", "Threads", new { id = Model.Id });
 }
 
-<article class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-        <p class="text-uppercase text-secondary small fw-semibold mb-2">@Model.Category.Name</p>
-        <h1 class="h4 fw-semibold mb-3">@Model.Title</h1>
-        <p class="text-muted mb-4">
-            @@@Model.User.Username
-            ·
-            @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-        </p>
-        <p class="mb-0">@Model.Content</p>
-    </div>
-</article>
+<div class="thread-page">
+    <a class="thread-page__back" asp-controller="Home" asp-action="Index">Back to threads</a>
 
-<section class="mt-4">
-    <h2 class="h5 fw-semibold mb-3">Answers</h2>
-
-    @if (answers.Count == 0)
-    {
-        <p class="text-muted mb-0">No answers yet.</p>
-    }
-    else
-    {
-        <div class="d-flex flex-column gap-3">
-            @foreach (var answer in answers)
-            {
-                <article class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <p class="text-muted mb-3">
-                            @@@answer.User.Username
-                            ·
-                            @answer.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                        </p>
-                        <p class="mb-0">@answer.Content</p>
-                    </div>
-                </article>
-            }
-        </div>
-    }
-</section>
-
-<section class="card border-0 shadow-sm mt-4">
-    <div class="card-body p-4">
-        <h2 class="h5 fw-semibold mb-3">Add an answer</h2>
-        <form asp-controller="Answers" asp-action="Create" method="post">
-            <input type="hidden" name="threadId" value="@Model.Id" />
-            <div class="mb-3">
-                <label for="content" class="form-label">Your answer</label>
-                <textarea id="content"
-                          name="content"
-                          class="form-control"
-                          rows="5"
-                          maxlength="1000"
-                          required
-                          placeholder="Write your answer..."></textarea>
+    <article class="thread-panel">
+        <header class="thread-panel__header">
+            <p class="thread-panel__category">@Model.Category.Name</p>
+            <div class="thread-panel__byline">
+                <span>@@@Model.User.Username</span>
+                <span aria-hidden="true">&middot;</span>
+                <time datetime="@Model.CreatedAt.ToString("O")">
+                    @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                </time>
             </div>
-            <button type="submit" class="btn btn-primary">Post answer</button>
-        </form>
-    </div>
-</section>
+        </header>
+
+        <div class="thread-panel__post">
+            <h1 class="thread-panel__title">@Model.Title</h1>
+            <p class="thread-panel__content">@Model.Content</p>
+        </div>
+
+        <section class="thread-panel__answers" aria-labelledby="answers-heading">
+            <div class="thread-panel__answers-head">
+                <h2 id="answers-heading" class="thread-panel__answers-title">Answers</h2>
+                <span class="thread-panel__count">@answers.Count</span>
+            </div>
+
+            @if (answers.Count == 0)
+            {
+                <p class="thread-panel__empty">No answers yet. Be the first to reply.</p>
+            }
+            else
+            {
+                <ol class="answer-list">
+                    @foreach (var answer in answers)
+                    {
+                        var initial = string.IsNullOrEmpty(answer.User.Username)
+                            ? "?"
+                            : answer.User.Username[0].ToString().ToUpperInvariant();
+                        <li class="answer-item">
+                            <div class="answer-item__avatar" aria-hidden="true">@initial</div>
+                            <div class="answer-item__body">
+                                <div class="thread-panel__byline">
+                                    <span>@@@answer.User.Username</span>
+                                    <span aria-hidden="true">&middot;</span>
+                                    <time datetime="@answer.CreatedAt.ToString("O")">
+                                        @answer.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                                    </time>
+                                </div>
+                                <p class="answer-item__content">@answer.Content</p>
+                            </div>
+                        </li>
+                    }
+                </ol>
+            }
+        </section>
+
+        <section class="thread-panel__composer" aria-labelledby="reply-heading">
+            @if (isSignedIn)
+            {
+                <h2 id="reply-heading" class="thread-panel__composer-title">Add an answer</h2>
+                <p class="thread-panel__composer-meta">Posting as @@@User.Identity!.Name</p>
+                <form asp-controller="Answers" asp-action="Create" method="post">
+                    <input type="hidden" name="threadId" value="@Model.Id" />
+                    <label class="visually-hidden" for="content">Your answer</label>
+                    <textarea id="content"
+                              name="content"
+                              class="form-control thread-panel__textarea"
+                              rows="4"
+                              maxlength="1000"
+                              required
+                              placeholder="Write your answer..."></textarea>
+                    <button type="submit" class="btn btn-primary">Post answer</button>
+                </form>
+            }
+            else
+            {
+                <div class="answer-gate">
+                    <div>
+                        <h2 id="reply-heading" class="thread-panel__composer-title">Want to reply?</h2>
+                        <p class="answer-gate__text">
+                            Sign in to post an answer. Anyone can read the discussion.
+                        </p>
+                    </div>
+                    <div class="answer-gate__actions">
+                        <a class="btn btn-primary"
+                           asp-controller="Users"
+                           asp-action="Login"
+                           asp-route-returnUrl="@returnUrl">
+                            Log in to answer
+                        </a>
+                        <a class="btn btn-outline-light answer-gate__secondary"
+                           asp-controller="Users"
+                           asp-action="Register"
+                           asp-route-returnUrl="@returnUrl">
+                            Create an account
+                        </a>
+                    </div>
+                </div>
+            }
+        </section>
+    </article>
+</div>

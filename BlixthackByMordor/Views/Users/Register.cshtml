@@ -9,6 +9,7 @@
     <form asp-controller="Users"
           asp-action="Register"
           method="post" class="w-25 mx-auto text-start">
+        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
         <div asp-validation-summary="ModelOnly"></div>
 
@@ -65,7 +66,8 @@
         </b>
 
         <a asp-controller="Users"
-           asp-action="Login">
+           asp-action="Login"
+           asp-route-returnUrl="@ViewData["ReturnUrl"]">
             Logga in
         </a>
     </p>

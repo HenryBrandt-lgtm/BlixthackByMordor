@@ -9,6 +9,7 @@
 <form asp-controller="Users"
       asp-action="Login"
       method="post">
+    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
     <div asp-validation-summary="ModelOnly"></div>
 
@@ -39,7 +40,8 @@
     Har du inget konto?
 
     <a asp-controller="Users"
-       asp-action="Register">
+       asp-action="Register"
+       asp-route-returnUrl="@ViewData["ReturnUrl"]">
         Registrera
     </a>
 </p>
