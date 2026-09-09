@@ -36,7 +36,16 @@
             <div class="site-nav__auth">
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <span class="site-nav__greeting">Hi @(User.Identity.Name)</span>
+                    var profileInitial = string.IsNullOrEmpty(User.Identity.Name)
+                        ? "?"
+                        : User.Identity.Name[0].ToString().ToUpperInvariant();
+                    <a class="site-nav__profile"
+                       asp-controller="Users"
+                       asp-action="Profile"
+                       title="Your profile"
+                       aria-label="Your profile">
+                        <span class="site-nav__avatar" aria-hidden="true">@profileInitial</span>
+                    </a>
                     <form asp-controller="Users"
                           asp-action="Logout"
                           method="post"

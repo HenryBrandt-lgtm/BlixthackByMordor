@@ -149,10 +149,38 @@ a {
   margin-left: 0.75rem;
 }
 
-.site-nav__greeting {
-  color: var(--muted-foreground);
-  font-size: 0.8125rem;
-  font-weight: 600;
+.site-nav__profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.site-nav__profile:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.site-nav__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--primary-foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: var(--primary);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-nav__profile:hover .site-nav__avatar,
+.site-nav__profile:focus-visible .site-nav__avatar {
+  background-color: var(--sidebar-primary);
+  border-color: var(--border);
 }
 
 .site-nav__logout {
@@ -636,6 +664,70 @@ a {
   width: 100%;
   max-width: 28rem;
   margin: 0;
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.25rem 1.25rem 0;
+}
+
+.profile-hero__avatar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  color: var(--primary-foreground);
+  font-size: 1.15rem;
+  font-weight: 700;
+  background-color: var(--primary);
+  border-radius: 999px;
+}
+
+.profile-hero__name {
+  margin: 0 0 0.2rem;
+  font-size: 1.2rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.profile-hero__since {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+.profile-password {
+  margin: 0 0 1.25rem;
+  padding: 0.95rem 1rem 0.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.profile-password__legend {
+  float: none;
+  width: auto;
+  margin-bottom: 0.15rem;
+  padding: 0 0.25rem;
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.thread-compose__success {
+  margin: 0 0 1.1rem;
+  padding: 0.7rem 0.85rem;
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background-color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .thread-compose__errors.validation-summary-valid {

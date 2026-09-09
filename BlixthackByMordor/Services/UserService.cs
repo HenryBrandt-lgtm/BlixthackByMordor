@@ -54,7 +54,39 @@ namespace BlixthackByMordor.Services
             return user;
         }
 
+        public async Task<UserModel?> GetByIdAsync(int id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
 
+        public async Task<bool> EmailTakenByOtherUserAsync(string email, int userId)
+        {
+            return await _context.Users
+                .AnyAsync(u => u.Email == email && u.Id != userId);
+        }
 
+        public async Task<UserModel?> UpdateProfileAsync(
+            int userId,
+            string username,
+            string email,
+            string? newPassword)
+        {
+            var user = await GetByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            user.Username = username;
+            user.Email = email;
+
+            if (!string.IsNullOrWhiteSpace(newPassword))
+            {
+                user.Password = newPassword;
+            }
+
+            await _context.SaveChangesAsync();
+            return user;
+        }
     }
 }

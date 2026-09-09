@@ -1,11 +1,10 @@
-﻿using BlixthackByMordor.Data;
-using BlixthackByMordor.Models;
+﻿using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
 using BlixthackByMordor.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BlixthackByMordor.Controllers
@@ -100,23 +99,9 @@ namespace BlixthackByMordor.Controllers
                 return View(model);
             }
 
-            var claims = new List<Claim>()
-            {
-                new Claim( ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Name,user.Username),
-                new Claim(ClaimTypes.Email,user.Email),
-            };
-
-            var identity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var princpal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, princpal);
+            await SignInUserAsync(user);
 
             return RedirectAfterLogin(returnUrl);
-
-
         }
 
 
@@ -136,6 +121,103 @@ namespace BlixthackByMordor.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null) return Unauthorized();
+
+            return View(ToProfileViewModel(user));
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ProfileViewModel model)
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null) return Unauthorized();
+
+            model.CreatedAt = user.CreatedAt;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (await _service.EmailTakenByOtherUserAsync(model.Email, user.Id))
+            {
+                ModelState.AddModelError(
+                    nameof(model.Email),
+                    "An account with this email already exists."
+                );
+                return View(model);
+            }
+
+            var changingPassword = !string.IsNullOrWhiteSpace(model.NewPassword);
+            if (changingPassword && user.Password != model.CurrentPassword)
+            {
+                ModelState.AddModelError(
+                    nameof(model.CurrentPassword),
+                    "Current password is incorrect."
+                );
+                return View(model);
+            }
+
+            var updated = await _service.UpdateProfileAsync(
+                user.Id,
+                model.Username,
+                model.Email,
+                changingPassword ? model.NewPassword : null
+            );
+
+            if (updated == null)
+            {
+                ModelState.AddModelError("", "Could not update your profile.");
+                return View(model);
+            }
+
+            await SignInUserAsync(updated);
+            TempData["ProfileSaved"] = true;
+            return RedirectToAction(nameof(Profile));
+        }
+
+        private async Task<UserModel?> GetCurrentUserAsync()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return null;
+
+            return await _service.GetByIdAsync(int.Parse(userId));
+        }
+
+        private static ProfileViewModel ToProfileViewModel(UserModel user)
+        {
+            return new ProfileViewModel
+            {
+                Username = user.Username,
+                Email = user.Email,
+                CreatedAt = user.CreatedAt
+            };
+        }
+
+        private async Task SignInUserAsync(UserModel user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+            };
+
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
 
         private IActionResult RedirectAfterLogin(string? returnUrl)
