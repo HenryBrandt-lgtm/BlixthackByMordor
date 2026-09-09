@@ -1,8 +1,11 @@
+@using System.Security.Claims
 @model ThreadModel
 @{
     ViewData["Title"] = Model.Title;
     var answers = Model.Answers?.ToList() ?? [];
     var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var isOwner = currentUserId != null && currentUserId == Model.UserId.ToString();
     var returnUrl = Url.Action("Details", "Threads", new { id = Model.Id });
 }
 
@@ -22,7 +25,22 @@
         </header>
 
         <div class="thread-panel__post">
-            <h1 class="thread-panel__title">@Model.Title</h1>
+            <div class="thread-panel__title-row">
+                <h1 class="thread-panel__title">@Model.Title</h1>
+                @if (isOwner)
+                {
+                    <form asp-controller="Threads"
+                          asp-action="Delete"
+                          asp-route-id="@Model.Id"
+                          method="post"
+                          class="thread-panel__delete"
+                          onsubmit="return confirm('Delete this thread?');">
+                        <button type="submit" class="btn btn-outline-light thread-panel__delete-btn">
+                            Delete
+                        </button>
+                    </form>
+                }
+            </div>
             <p class="thread-panel__content">@Model.Content</p>
         </div>
 

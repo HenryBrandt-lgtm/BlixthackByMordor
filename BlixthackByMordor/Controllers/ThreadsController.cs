@@ -51,5 +51,23 @@ namespace BlixthackByMordor.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [Authorize]
+        [HttpPost("/Threads/{id:int}/Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var thread = await threadService.GetThreadById(id);
+            if (thread == null) return NotFound();
+
+            if (thread.UserId != int.Parse(userId)) return Forbid();
+
+            await threadService.DeleteThread(thread);
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
     }
 }
