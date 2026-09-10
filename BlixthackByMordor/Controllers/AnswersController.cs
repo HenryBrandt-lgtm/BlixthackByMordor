@@ -29,6 +29,10 @@ namespace BlixthackByMordor.Controllers
             {
                 return NotFound();
             }
+            if (thread.ThreadLocked)
+            {
+                return Forbid();
+            }
 
             var answer = new AnswerModel
             {
