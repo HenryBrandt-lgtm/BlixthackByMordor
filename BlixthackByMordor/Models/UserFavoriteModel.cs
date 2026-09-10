@@ -8,7 +8,7 @@
         public UserModel User { get; set; }
 
         public int AnswerId { get; set; }
-        public AnswerModel Answers { get; set; }
+        public AnswerModel Answer { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

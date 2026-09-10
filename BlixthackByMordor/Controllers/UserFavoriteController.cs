@@ -21,11 +21,11 @@ namespace BlixthackByMordor.Controllers
         }
 
 
-        public async Task<IActionResult> Add(int postId)
-        {
-            var userId = CurrentUserId();
+        //public async Task<IActionResult> Add(int postId)
+        //{
+        //    var userId = CurrentUserId();
 
-        }
+        //}
 
         private int? CurrentUserId()
         {
