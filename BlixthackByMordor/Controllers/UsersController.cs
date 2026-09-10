@@ -133,13 +133,14 @@ namespace BlixthackByMordor.Controllers
                     return Challenge();
                 }
 
-                var currentUser = await GetCurrentUserAsync();
+                var currentUser = await _service.GetByIdWithActivityAsync(
+                    int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
                 if (currentUser == null) return Unauthorized();
 
                 return View(ToProfileViewModel(currentUser, isOwner: true));
             }
 
-            var user = await _service.GetByIdAsync(id.Value);
+            var user = await _service.GetByIdWithActivityAsync(id.Value);
             if (user == null) return NotFound();
 
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -161,6 +162,7 @@ namespace BlixthackByMordor.Controllers
 
             if (!ModelState.IsValid)
             {
+                await AttachActivityAsync(model, user.Id);
                 return View(model);
             }
 
@@ -170,6 +172,7 @@ namespace BlixthackByMordor.Controllers
                     nameof(model.Email),
                     "An account with this email already exists."
                 );
+                await AttachActivityAsync(model, user.Id);
                 return View(model);
             }
 
@@ -180,6 +183,7 @@ namespace BlixthackByMordor.Controllers
                     nameof(model.CurrentPassword),
                     "Current password is incorrect."
                 );
+                await AttachActivityAsync(model, user.Id);
                 return View(model);
             }
 
@@ -194,6 +198,7 @@ namespace BlixthackByMordor.Controllers
             if (updated == null)
             {
                 ModelState.AddModelError("", "Could not update your profile.");
+                await AttachActivityAsync(model, user.Id);
                 return View(model);
             }
 
@@ -210,6 +215,15 @@ namespace BlixthackByMordor.Controllers
             return await _service.GetByIdAsync(int.Parse(userId));
         }
 
+        private async Task AttachActivityAsync(ProfileViewModel model, int userId)
+        {
+            var user = await _service.GetByIdWithActivityAsync(userId);
+            if (user == null) return;
+
+            model.Threads = ToThreadItems(user);
+            model.Answers = ToAnswerItems(user);
+        }
+
         private static ProfileViewModel ToProfileViewModel(UserModel user, bool isOwner)
         {
             return new ProfileViewModel
@@ -218,8 +232,50 @@ namespace BlixthackByMordor.Controllers
                 Email = isOwner ? user.Email : string.Empty,
                 AboutMe = user.AboutMe,
                 CreatedAt = user.CreatedAt,
-                IsOwner = isOwner
+                IsOwner = isOwner,
+                Threads = ToThreadItems(user),
+                Answers = ToAnswerItems(user)
             };
+        }
+
+        private static IReadOnlyList<ProfileThreadItem> ToThreadItems(UserModel user)
+        {
+            return (user.Threads ?? [])
+                .OrderByDescending(thread => thread.CreatedAt)
+                .Select(thread => new ProfileThreadItem
+                {
+                    Id = thread.Id,
+                    Title = thread.Title,
+                    CategoryName = thread.Category.Name,
+                    CreatedAt = thread.CreatedAt
+                })
+                .ToList();
+        }
+
+        private static IReadOnlyList<ProfileAnswerItem> ToAnswerItems(UserModel user)
+        {
+            return (user.Answers ?? [])
+                .Where(answer => answer.Thread != null)
+                .OrderByDescending(answer => answer.CreatedAt)
+                .Select(answer => new ProfileAnswerItem
+                {
+                    ThreadId = answer.ThreadId,
+                    ThreadTitle = answer.Thread!.Title,
+                    Excerpt = Excerpt(answer.Content),
+                    CreatedAt = answer.CreatedAt
+                })
+                .ToList();
+        }
+
+        private static string Excerpt(string content, int maxLength = 140)
+        {
+            content = content.Trim();
+            if (content.Length <= maxLength)
+            {
+                return content;
+            }
+
+            return content[..maxLength].TrimEnd() + "…";
         }
 
         private async Task SignInUserAsync(UserModel user)

@@ -59,6 +59,16 @@ namespace BlixthackByMordor.Services
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        public async Task<UserModel?> GetByIdWithActivityAsync(int id)
+        {
+            return await _context.Users
+                .Include(user => user.Threads!)
+                    .ThenInclude(thread => thread.Category)
+                .Include(user => user.Answers!)
+                    .ThenInclude(answer => answer.Thread)
+                .FirstOrDefaultAsync(user => user.Id == id);
+        }
+
         public async Task<bool> EmailTakenByOtherUserAsync(string email, int userId)
         {
             return await _context.Users

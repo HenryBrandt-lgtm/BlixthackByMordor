@@ -23,6 +23,10 @@ namespace BlixthackByMordor.ViewModels
 
         public bool IsOwner { get; set; }
 
+        public IReadOnlyList<ProfileThreadItem> Threads { get; set; } = [];
+
+        public IReadOnlyList<ProfileAnswerItem> Answers { get; set; } = [];
+
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
         public string? CurrentPassword { get; set; }
@@ -67,5 +71,21 @@ namespace BlixthackByMordor.ViewModels
                     [nameof(ConfirmNewPassword)]);
             }
         }
+    }
+
+    public class ProfileThreadItem
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class ProfileAnswerItem
+    {
+        public int ThreadId { get; set; }
+        public string ThreadTitle { get; set; } = string.Empty;
+        public string Excerpt { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
     }
 }
