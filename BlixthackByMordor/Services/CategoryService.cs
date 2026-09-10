@@ -23,5 +23,11 @@ namespace BlixthackByMordor.Services
             return await db.Categories.AnyAsync(c => c.Name == categoryName);
         }
 
+        public async Task<CategoryModel?> GetCategoryById(int id)
+        {
+            return await db.Categories
+                .FirstOrDefaultAsync(category => category.Id == id);
+        }
+
     }
 }
