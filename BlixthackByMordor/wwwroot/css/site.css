@@ -934,3 +934,54 @@ a {
 .footer a {
   color: var(--primary);
 }
+
+
+.favorite-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    color: #8f96a3;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+    .favorite-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.06);
+        color: #c7ccd5;
+    }
+
+.favorite-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.favorite-icon {
+    font-size: 19px;
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Checked */
+.favorite-checkbox:checked + .favorite-icon {
+    color: #f5c542;
+}
+
+    .favorite-checkbox:checked + .favorite-icon + .favorite-text {
+        color: #f5c542;
+    }
+
+/* Lite animation när man klickar */
+.favorite-checkbox:checked + .favorite-icon {
+    transform: scale(1.15);
+}
+
+/* Keyboard accessibility */
+.favorite-checkbox:focus-visible + .favorite-icon {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
