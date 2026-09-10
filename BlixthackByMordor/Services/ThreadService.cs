@@ -48,6 +48,16 @@ namespace BlixthackByMordor.Services
             db.Threads.Remove(thread);
             await db.SaveChangesAsync();
         }
+
+        public async Task LockThread(ThreadModel thread, string username)
+        {
+            thread.ThreadLocked = true;
+            thread.ThreadLockedAt = DateTime.Now;
+            thread.ThreadLockedBy = username;
+
+            await db.SaveChangesAsync();
+
+        }
         public async Task UpdateThread(ThreadModel thread)
         {
             db.Threads.Update(thread);
