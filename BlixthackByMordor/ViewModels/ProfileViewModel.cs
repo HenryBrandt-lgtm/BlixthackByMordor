@@ -27,6 +27,7 @@ namespace BlixthackByMordor.ViewModels
         public IReadOnlyList<ProfileThreadItem> Threads { get; set; } = [];
 
         public IReadOnlyList<ProfileAnswerItem> Answers { get; set; } = [];
+        public IReadOnlyList<ProfileFavoriteAnswerItem> FavoriteAnswers { get; set; } = [];
 
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
@@ -83,7 +84,8 @@ namespace BlixthackByMordor.ViewModels
                 CreatedAt = user.CreatedAt,
                 IsOwner = isOwner,
                 Threads = MapThreads(user),
-                Answers = MapAnswers(user)
+                Answers = MapAnswers(user),
+                FavoriteAnswers = MapFavoriteAnswers(user)
             };
         }
 
@@ -91,6 +93,7 @@ namespace BlixthackByMordor.ViewModels
         {
             Threads = MapThreads(user);
             Answers = MapAnswers(user);
+            FavoriteAnswers=MapFavoriteAnswers(user);
         }
 
         private static IReadOnlyList<ProfileThreadItem> MapThreads(UserModel user)
@@ -121,6 +124,20 @@ namespace BlixthackByMordor.ViewModels
                 })
                 .ToList();
         }
+        private static IReadOnlyList<ProfileFavoriteAnswerItem> MapFavoriteAnswers(UserModel user)
+        {
+            return (user.Favorites ?? [])
+                .OrderByDescending(favorite => favorite.CreatedAt)
+                .Select(favorite => new ProfileFavoriteAnswerItem
+                {
+                    ThreadId = favorite.Answer.ThreadId,
+                    AnswerId=favorite.AnswerId,
+                    ThreadTitle = favorite.Answer.Thread.Title,
+                    Excerpt = Excerpt(favorite.Answer.Content),
+                    CreatedAt = favorite.CreatedAt
+                })
+                .ToList();
+        }
 
         private static string Excerpt(string content, int maxLength = 140)
         {
@@ -145,6 +162,15 @@ namespace BlixthackByMordor.ViewModels
     public class ProfileAnswerItem
     {
         public int ThreadId { get; set; }
+        public string ThreadTitle { get; set; } = string.Empty;
+        public string Excerpt { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+    
+    public class ProfileFavoriteAnswerItem
+    {
+        public int ThreadId { get; set; }
+        public int AnswerId{ get; set; }
         public string ThreadTitle { get; set; } = string.Empty;
         public string Excerpt { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
