@@ -11,5 +11,12 @@ namespace BlixthackByMordor.Services
             return await db.Categories.ToListAsync();
         }
 
+        public async Task CreateNewCategory(CategoryModel category)
+        {
+
+            db.Categories.Add(category);
+            await db.SaveChangesAsync();
+        }
+
     }
 }
