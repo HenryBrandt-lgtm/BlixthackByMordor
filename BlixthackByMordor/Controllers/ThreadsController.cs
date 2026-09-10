@@ -21,11 +21,7 @@ namespace BlixthackByMordor.Controllers
 
             return View(thread);
         }
-        private bool IsAdmin()
-        {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return userIdClaim == "1";
-        }
+        private bool IsAdmin() => User.IsInRole("Admin");
 
         [Authorize]
         [HttpGet("/Threads/Create")]

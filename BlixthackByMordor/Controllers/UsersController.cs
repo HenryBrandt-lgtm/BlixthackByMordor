@@ -101,6 +101,18 @@ namespace BlixthackByMordor.Controllers
 
             await SignInUserAsync(user);
 
+            if (user.IsAdmin)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
+
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var princpal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, princpal);
+
             return RedirectAfterLogin(returnUrl);
         }
 
