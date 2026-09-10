@@ -22,11 +22,11 @@ namespace BlixthackByMordor.Controllers
         }
 
         [Authorize]
-
+        [HttpPost]
         public async Task<IActionResult> ToggleFavorite(int answerId)
         {
             var userId = CurrentUserId();
-
+        
 
             var isFavorite =await _service.IsFavorite(userId, answerId);
 
