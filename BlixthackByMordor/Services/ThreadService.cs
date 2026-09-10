@@ -61,7 +61,10 @@ namespace BlixthackByMordor.Services
 
         public async Task UnlockThread(ThreadModel thread)
         {
-            thread.ThreadLocked = false;           
+            thread.ThreadLocked = false;
+            thread.ThreadLockedAt = null;
+            thread.ThreadLockedBy = null;
+
 
             await db.SaveChangesAsync();
 
