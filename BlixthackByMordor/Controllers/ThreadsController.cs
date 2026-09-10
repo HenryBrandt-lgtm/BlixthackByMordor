@@ -65,7 +65,8 @@ namespace BlixthackByMordor.Controllers
             var thread = await threadService.GetThreadById(id);
             if (thread == null) return NotFound();
 
-            if (thread.UserId != int.Parse(userId)) return Forbid();
+            var isAdmin = User.IsInRole("Admin");
+            if (thread.UserId != int.Parse(userId) && !isAdmin) return Forbid();
 
             await threadService.DeleteThread(thread);
 
