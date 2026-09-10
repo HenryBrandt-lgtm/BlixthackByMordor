@@ -42,8 +42,6 @@
                             <a asp-controller="Threads" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light thread-panel__edit-btn">
                                 Edit
                             </a>
-                           
-
                         }
 
                         @if (isOwner)
@@ -119,27 +117,30 @@
                 <p>Locked by: @Model.ThreadLockedBy</p>
                 <p>Locked at: @Model.ThreadLockedAt</p>
 
-                if(isAdmin)
+                if (isAdmin)
                 {
                     <form asp-controller="Threads"
                           asp-action="Unlock"
                           asp-route-id="@Model.Id"
-                          method="post" onsubmit="return confirm('Are you sure you want to UNLOCK the thread?')">
-                        <button type="submit" class="btn btn-outline-light">
-                            Unlock Thread
+                          method="post" onsubmit="return confirm('Are you sure you want to UNLOCK the thread?')"
+                          style="display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-outline-light" style="height: 40px; width: 40px; padding: 2px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock-open">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                            </svg>
                         </button>
 
                     </form>
                 }
             }
-            
+
 
             else if (isSignedIn)
             {
                 <h2 id="reply-heading" class="thread-panel__composer-title">Add an answer</h2>
                 <p class="thread-panel__composer-meta">Posting as @@@User.Identity!.Name</p>
-                <form asp-controller="Answers" asp-action="Create" method="post">
-                    <input type="hidden" name="threadId" value="@Model.Id" />
+                <form id="create-answer-form" asp-controller="Answers" asp-action="Create" method="post">
+                    <input type="hidden" name="threadId" value="@Model.Id"/>
                     <label class="visually-hidden" for="content">Your answer</label>
                     <textarea id="content"
                               name="content"
@@ -148,25 +149,26 @@
                               maxlength="1000"
                               required
                               placeholder="Write your answer..."></textarea>
-                    <button type="submit" class="btn btn-primary">Post answer</button>
                 </form>
-
-
-                @if (!Model.ThreadLocked && isAdmin)
-                {
-
-                    <form asp-controller="Threads"
-                          asp-action="Lock"
-                          asp-route-id="@Model.Id"
-                          method="post" onsubmit="return confirm('Are you sure you want to LOCK the thread?')">
-                        <button type="submit" class="btn btn-outline-light">Lock Thread</button>
-                    </form>                  
-
-                }
-            
-
+                <div class="thread-panel__composer-actions">
+                    <button type="submit" form="create-answer-form" class="btn btn-primary">Post answer</button>
+                    @if (isAdmin)
+                    {
+                        <form asp-controller="Threads"
+                              asp-action="Lock"
+                              asp-route-id="@Model.Id"
+                              method="post"
+                              class="thread-panel__lock-form"
+                              onsubmit="return confirm('Are you sure you want to LOCK the thread?')">
+                            <button type="submit" class="btn thread-panel__edit-btn thread-panel__lock-btn" aria-label="Lock thread">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock" aria-hidden="true">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </button>
+                        </form>
+                    }
+                </div>
             }
-
             else
             {
                 <div class="answer-gate">
