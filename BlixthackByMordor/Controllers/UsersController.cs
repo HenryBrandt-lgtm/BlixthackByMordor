@@ -123,14 +123,29 @@ namespace BlixthackByMordor.Controllers
             return View();
         }
 
-        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> Profile(int? id)
         {
-            var user = await GetCurrentUserAsync();
-            if (user == null) return Unauthorized();
+            if (id == null)
+            {
+                if (User.Identity?.IsAuthenticated != true)
+                {
+                    return Challenge();
+                }
 
-            return View(ToProfileViewModel(user));
+                var currentUser = await GetCurrentUserAsync();
+                if (currentUser == null) return Unauthorized();
+
+                return View(ToProfileViewModel(currentUser, isOwner: true));
+            }
+
+            var user = await _service.GetByIdAsync(id.Value);
+            if (user == null) return NotFound();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isOwner = currentUserId != null && currentUserId == user.Id.ToString();
+
+            return View(ToProfileViewModel(user, isOwner));
         }
 
         [Authorize]
@@ -142,6 +157,7 @@ namespace BlixthackByMordor.Controllers
             if (user == null) return Unauthorized();
 
             model.CreatedAt = user.CreatedAt;
+            model.IsOwner = true;
 
             if (!ModelState.IsValid)
             {
@@ -171,6 +187,7 @@ namespace BlixthackByMordor.Controllers
                 user.Id,
                 model.Username,
                 model.Email,
+                model.AboutMe,
                 changingPassword ? model.NewPassword : null
             );
 
@@ -193,13 +210,15 @@ namespace BlixthackByMordor.Controllers
             return await _service.GetByIdAsync(int.Parse(userId));
         }
 
-        private static ProfileViewModel ToProfileViewModel(UserModel user)
+        private static ProfileViewModel ToProfileViewModel(UserModel user, bool isOwner)
         {
             return new ProfileViewModel
             {
                 Username = user.Username,
-                Email = user.Email,
-                CreatedAt = user.CreatedAt
+                Email = isOwner ? user.Email : string.Empty,
+                AboutMe = user.AboutMe,
+                CreatedAt = user.CreatedAt,
+                IsOwner = isOwner
             };
         }
 

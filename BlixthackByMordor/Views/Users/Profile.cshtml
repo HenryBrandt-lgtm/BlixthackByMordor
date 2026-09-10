@@ -1,6 +1,6 @@
 @model BlixthackByMordor.ViewModels.ProfileViewModel
 @{
-    ViewData["Title"] = "Your profile";
+    ViewData["Title"] = Model.IsOwner ? "Your profile" : Model.Username;
     var initial = string.IsNullOrEmpty(Model.Username)
         ? "?"
         : Model.Username[0].ToString().ToUpperInvariant();
@@ -9,7 +9,7 @@
 <div class="thread-page auth-page">
     <article class="thread-panel">
         <header class="thread-panel__header">
-            <p class="thread-panel__category">Your profile</p>
+            <p class="thread-panel__category">@(Model.IsOwner ? "Your profile" : "Profile")</p>
         </header>
 
         <div class="profile-hero">
@@ -25,72 +25,100 @@
             </div>
         </div>
 
-        <form asp-controller="Users"
-              asp-action="Profile"
-              method="post"
-              class="thread-compose">
-            <div asp-validation-summary="ModelOnly" class="thread-compose__errors"></div>
+        @if (Model.IsOwner)
+        {
+            <form asp-controller="Users"
+                  asp-action="Profile"
+                  method="post"
+                  class="thread-compose">
+                <div asp-validation-summary="ModelOnly" class="thread-compose__errors"></div>
 
-            @if (TempData["ProfileSaved"] is true)
-            {
-                <p class="thread-compose__success" role="status">Your profile has been updated.</p>
-            }
-
-            <div class="thread-compose__field">
-                <label asp-for="Username" class="thread-compose__label"></label>
-                <input asp-for="Username"
-                       class="form-control thread-compose__control"
-                       autocomplete="username"
-                       maxlength="50" />
-                <span asp-validation-for="Username" class="thread-compose__field-error"></span>
-            </div>
-
-            <div class="thread-compose__field">
-                <label asp-for="Email" class="thread-compose__label"></label>
-                <input asp-for="Email"
-                       class="form-control thread-compose__control"
-                       autocomplete="email" />
-                <span asp-validation-for="Email" class="thread-compose__field-error"></span>
-            </div>
-
-            <fieldset class="profile-password">
-                <legend class="profile-password__legend">Change password</legend>
-                <p class="thread-compose__hint">Leave these blank to keep your current password.</p>
+                @if (TempData["ProfileSaved"] is true)
+                {
+                    <p class="thread-compose__success" role="status">Your profile has been updated.</p>
+                }
 
                 <div class="thread-compose__field">
-                    <label asp-for="CurrentPassword" class="thread-compose__label"></label>
-                    <input asp-for="CurrentPassword"
-                           class="form-control thread-compose__control"
-                           autocomplete="current-password" />
-                    <span asp-validation-for="CurrentPassword" class="thread-compose__field-error"></span>
+                    <label asp-for="AboutMe" class="thread-compose__label"></label>
+                    <textarea asp-for="AboutMe"
+                              class="form-control thread-compose__control thread-compose__textarea profile-about__input"
+                              maxlength="500"
+                              rows="4"
+                              placeholder="Tell others a bit about yourself"></textarea>
+                    <p class="thread-compose__hint">Up to 500 characters. This is visible on your public profile.</p>
+                    <span asp-validation-for="AboutMe" class="thread-compose__field-error"></span>
                 </div>
 
                 <div class="thread-compose__field">
-                    <label asp-for="NewPassword" class="thread-compose__label"></label>
-                    <input asp-for="NewPassword"
+                    <label asp-for="Username" class="thread-compose__label"></label>
+                    <input asp-for="Username"
                            class="form-control thread-compose__control"
-                           autocomplete="new-password"
-                           placeholder="At least 6 characters" />
-                    <span asp-validation-for="NewPassword" class="thread-compose__field-error"></span>
+                           autocomplete="username"
+                           maxlength="50" />
+                    <span asp-validation-for="Username" class="thread-compose__field-error"></span>
                 </div>
 
                 <div class="thread-compose__field">
-                    <label asp-for="ConfirmNewPassword" class="thread-compose__label"></label>
-                    <input asp-for="ConfirmNewPassword"
+                    <label asp-for="Email" class="thread-compose__label"></label>
+                    <input asp-for="Email"
                            class="form-control thread-compose__control"
-                           autocomplete="new-password" />
-                    <span asp-validation-for="ConfirmNewPassword" class="thread-compose__field-error"></span>
+                           autocomplete="email" />
+                    <span asp-validation-for="Email" class="thread-compose__field-error"></span>
                 </div>
-            </fieldset>
 
-            <div class="thread-compose__actions">
-                <button type="submit" class="btn btn-primary">Save changes</button>
-                <a class="btn btn-outline-light answer-gate__secondary"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Cancel
-                </a>
-            </div>
-        </form>
+                <fieldset class="profile-password">
+                    <legend class="profile-password__legend">Change password</legend>
+                    <p class="thread-compose__hint">Leave these blank to keep your current password.</p>
+
+                    <div class="thread-compose__field">
+                        <label asp-for="CurrentPassword" class="thread-compose__label"></label>
+                        <input asp-for="CurrentPassword"
+                               class="form-control thread-compose__control"
+                               autocomplete="current-password" />
+                        <span asp-validation-for="CurrentPassword" class="thread-compose__field-error"></span>
+                    </div>
+
+                    <div class="thread-compose__field">
+                        <label asp-for="NewPassword" class="thread-compose__label"></label>
+                        <input asp-for="NewPassword"
+                               class="form-control thread-compose__control"
+                               autocomplete="new-password"
+                               placeholder="At least 6 characters" />
+                        <span asp-validation-for="NewPassword" class="thread-compose__field-error"></span>
+                    </div>
+
+                    <div class="thread-compose__field">
+                        <label asp-for="ConfirmNewPassword" class="thread-compose__label"></label>
+                        <input asp-for="ConfirmNewPassword"
+                               class="form-control thread-compose__control"
+                               autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmNewPassword" class="thread-compose__field-error"></span>
+                    </div>
+                </fieldset>
+
+                <div class="thread-compose__actions">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a class="btn btn-outline-light answer-gate__secondary"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        }
+        else
+        {
+            <section class="profile-about" aria-labelledby="about-heading">
+                <h2 id="about-heading" class="profile-about__title">About me</h2>
+                @if (string.IsNullOrWhiteSpace(Model.AboutMe))
+                {
+                    <p class="profile-about__empty">This user has not written an about me yet.</p>
+                }
+                else
+                {
+                    <p class="profile-about__text">@Model.AboutMe</p>
+                }
+            </section>
+        }
     </article>
 </div>

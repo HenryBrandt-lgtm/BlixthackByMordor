@@ -16,6 +16,13 @@ namespace BlixthackByMordor.ViewModels
         [Display(Name = "Member since")]
         public DateTime CreatedAt { get; set; }
 
+        [MaxLength(500)]
+        [Display(Name = "About me")]
+        [DataType(DataType.MultilineText)]
+        public string AboutMe { get; set; } = string.Empty;
+
+        public bool IsOwner { get; set; }
+
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
         public string? CurrentPassword { get; set; }

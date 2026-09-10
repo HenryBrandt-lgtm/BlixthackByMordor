@@ -69,6 +69,7 @@ namespace BlixthackByMordor.Services
             int userId,
             string username,
             string email,
+            string? aboutMe,
             string? newPassword)
         {
             var user = await GetByIdAsync(userId);
@@ -79,6 +80,7 @@ namespace BlixthackByMordor.Services
 
             user.Username = username;
             user.Email = email;
+            user.AboutMe = aboutMe?.Trim() ?? string.Empty;
 
             if (!string.IsNullOrWhiteSpace(newPassword))
             {

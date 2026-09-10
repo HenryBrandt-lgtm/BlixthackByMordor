@@ -16,7 +16,12 @@
         <header class="thread-panel__header">
             <p class="thread-panel__category">@Model.Category.Name</p>
             <div class="thread-panel__byline">
-                <span>@@@Model.User.Username</span>
+                <a class="thread-panel__author"
+                   asp-controller="Users"
+                   asp-action="Profile"
+                   asp-route-id="@Model.UserId">
+                    @@@Model.User.Username
+                </a>
                 <span aria-hidden="true">&middot;</span>
                 <time datetime="@Model.CreatedAt.ToString("O")">
                     @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
@@ -63,10 +68,21 @@
                             ? "?"
                             : answer.User.Username[0].ToString().ToUpperInvariant();
                         <li class="answer-item">
-                            <div class="answer-item__avatar" aria-hidden="true">@initial</div>
+                            <a class="answer-item__avatar-link"
+                               asp-controller="Users"
+                               asp-action="Profile"
+                               asp-route-id="@answer.UserId"
+                               aria-label="@answer.User.Username's profile">
+                                <span class="answer-item__avatar" aria-hidden="true">@initial</span>
+                            </a>
                             <div class="answer-item__body">
                                 <div class="thread-panel__byline">
-                                    <span>@@@answer.User.Username</span>
+                                    <a class="thread-panel__author"
+                                       asp-controller="Users"
+                                       asp-action="Profile"
+                                       asp-route-id="@answer.UserId">
+                                        @@@answer.User.Username
+                                    </a>
                                     <span aria-hidden="true">&middot;</span>
                                     <time datetime="@answer.CreatedAt.ToString("O")">
                                         @answer.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")

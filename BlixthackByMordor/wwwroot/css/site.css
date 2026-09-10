@@ -411,6 +411,18 @@ a {
   font-size: 0.75rem;
 }
 
+.thread-panel__author {
+  color: inherit;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.thread-panel__author:hover,
+.thread-panel__author:focus-visible {
+  color: var(--foreground);
+  text-decoration: underline;
+}
+
 .thread-panel__post {
   padding: 1.35rem 1.25rem 1.5rem;
 }
@@ -511,6 +523,18 @@ a {
 
 .answer-item:first-child {
   border-top: 0;
+}
+
+.answer-item__avatar-link {
+  display: flex;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.answer-item__avatar-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 .answer-item__avatar {
@@ -698,6 +722,36 @@ a {
   margin: 0;
   color: var(--muted-foreground);
   font-size: 0.75rem;
+}
+
+.profile-about {
+  padding: 1.15rem 1.25rem 1.5rem;
+}
+
+.profile-about__title {
+  margin: 0 0 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-about__text {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.925rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.profile-about__empty {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.profile-about__input {
+  min-height: 6.5rem;
 }
 
 .profile-password {

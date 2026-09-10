@@ -15,6 +15,9 @@ public class UserModel
 
     [Required] public DateTime CreatedAt { get; set; }
 
+    [MaxLength(500)]
+    public string AboutMe { get; set; } = string.Empty;
+
     public ICollection<ThreadModel>? Threads { get; set; } = new List<ThreadModel>();
     public ICollection<AnswerModel>? Answers { get; set; } = new List<AnswerModel>();
 }
