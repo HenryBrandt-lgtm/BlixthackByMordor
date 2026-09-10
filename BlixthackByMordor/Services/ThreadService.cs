@@ -48,5 +48,10 @@ namespace BlixthackByMordor.Services
             db.Threads.Remove(thread);
             await db.SaveChangesAsync();
         }
+        public async Task UpdateThread(ThreadModel thread)
+        {
+            db.Threads.Update(thread);
+            await db.SaveChangesAsync();
+        }
     }
 }

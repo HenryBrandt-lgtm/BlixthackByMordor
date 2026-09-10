@@ -21,6 +21,11 @@ namespace BlixthackByMordor.Controllers
 
             return View(thread);
         }
+        private bool IsAdmin()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return userIdClaim == "1";
+        }
 
         [Authorize]
         [HttpGet("/Threads/Create")]
@@ -69,6 +74,43 @@ namespace BlixthackByMordor.Controllers
             await threadService.DeleteThread(thread);
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [Authorize]
+        [HttpGet("/Threads/{id:int}/Edit")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var thread = await threadService.GetThreadById(id);
+            if (thread == null) return NotFound();
+
+            ViewBag.Categories = await categoryService.GetCategories();
+
+            return View("EditThread", thread);
+        }
+
+        [Authorize]
+        [HttpPost("/Threads/{id:int}/Edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, int categoryId, string title)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var thread = await threadService.GetThreadById(id);
+            if (thread == null) return NotFound();
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                ModelState.AddModelError("title", "Titel får inte vara tom.");
+            }
+
+            thread.Title = title;
+            thread.CategoryId = categoryId;
+
+            await threadService.UpdateThread(thread);
+
+            return RedirectToAction("Details", new { id = thread.Id });
         }
     }
 }

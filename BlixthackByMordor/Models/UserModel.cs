@@ -20,4 +20,6 @@ public class UserModel
 
     public ICollection<ThreadModel>? Threads { get; set; } = new List<ThreadModel>();
     public ICollection<AnswerModel>? Answers { get; set; } = new List<AnswerModel>();
+
+    public bool IsAdmin { get; set; } = false;
 }
