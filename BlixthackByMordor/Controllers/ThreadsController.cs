@@ -116,6 +116,8 @@ namespace BlixthackByMordor.Controllers
         public async Task<IActionResult> Lock(int id)
 
         {
+            //ADMIN CHECK
+            if (!IsAdmin()) return Forbid();
             //Hämtar id på den som just nu är inloggad
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
@@ -128,7 +130,7 @@ namespace BlixthackByMordor.Controllers
             var thread = await threadService.GetThreadById(id);
             if (thread == null) return NotFound();
             
-            //Controlelr skickar till ThreadService. thread = vilken tråd som skall låsas. username = vem som låser den. 
+            //Controller skickar till ThreadService. thread = vilken tråd som skall låsas. username = vem som låser den. 
             await threadService.LockThread(thread, username);
 
             return RedirectToAction(nameof(Details), new { id = thread.Id });
