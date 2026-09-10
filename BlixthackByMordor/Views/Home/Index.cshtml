@@ -27,6 +27,15 @@ else
                     <header class="category-header">
                         @* <h2 class="category-header__title">@category.Key</h2> *@
                         <h2 class="category-header__title">@category.Name</h2>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="Categories"
+                               asp-action="EditCategory"
+                               asp-route-id="@category.Id"
+                               class="btn btn-primary">
+                                Edit
+                            </a>
+                        }
                     </header>
                     <ul class="thread-list">
                        @*  @foreach (var thread in category) *@
