@@ -1,4 +1,5 @@
 ﻿using BlixthackByMordor.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -20,17 +21,32 @@ namespace BlixthackByMordor.Controllers
             return View();
         }
 
+        [Authorize]
 
-        //public async Task<IActionResult> Add(int postId)
-        //{
-        //    var userId = CurrentUserId();
+        public async Task<IActionResult> ToggleFavorite(int answerId)
+        {
+            var userId = CurrentUserId();
 
-        //}
 
-        private int? CurrentUserId()
+            var isFavorite =await _service.IsFavorite(userId, answerId);
+
+            if (!isFavorite)
+            {
+               await _service.AddFavoriteAnswer(userId, answerId);
+               return Json(new { isFavorite = true });
+
+            }
+
+            await _service.RemoveFavorite(userId, answerId);
+
+            return Json(new { isFavorite = false });
+
+        }
+
+        private int CurrentUserId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return userId == null ? null : int.Parse(userId);
+            return int.Parse(userId);
         }
 
 
