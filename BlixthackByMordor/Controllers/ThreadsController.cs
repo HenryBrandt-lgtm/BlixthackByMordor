@@ -117,10 +117,7 @@ namespace BlixthackByMordor.Controllers
 
         {
             //ADMIN CHECK
-            if (!IsAdmin()) return Forbid();
-            //Hämtar id på den som just nu är inloggad
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
+            if (!IsAdmin()) return Forbid();           
 
             //Hämtar username på den inloggade användaren
             var username = User.FindFirstValue(ClaimTypes.Name);
@@ -129,11 +126,33 @@ namespace BlixthackByMordor.Controllers
             //Hämtar tråden från databasen med det id som kom i URL:en
             var thread = await threadService.GetThreadById(id);
             if (thread == null) return NotFound();
-            
+
             //Controller skickar till ThreadService. thread = vilken tråd som skall låsas. username = vem som låser den. 
             await threadService.LockThread(thread, username);
 
             return RedirectToAction(nameof(Details), new { id = thread.Id });
         }
+
+        [Authorize]
+        [HttpPost("/Threads/{id:int}/Unlock")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unlock(int id)
+
+        {
+            //ADMIN CHECK
+            if (!IsAdmin()) return Forbid();          
+          
+
+            //Hämtar tråden från databasen med det id som kom i URL:en
+            var thread = await threadService.GetThreadById(id);
+            if (thread == null) return NotFound();
+
+            //Controller skickar till ThreadService. thread = vilken tråd som skall låsas upp. 
+            await threadService.UnlockThread(thread);
+
+            return RedirectToAction(nameof(Details), new { id = thread.Id });
+        }
+
+
     }
 }
