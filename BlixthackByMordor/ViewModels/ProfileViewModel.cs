@@ -20,7 +20,7 @@ namespace BlixthackByMordor.ViewModels
         [MaxLength(500)]
         [Display(Name = "About me")]
         [DataType(DataType.MultilineText)]
-        public string AboutMe { get; set; } = string.Empty;
+        public string? AboutMe { get; set; }
 
         public bool IsOwner { get; set; }
 
