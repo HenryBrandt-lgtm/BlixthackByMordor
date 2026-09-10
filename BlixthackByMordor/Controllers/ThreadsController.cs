@@ -108,5 +108,30 @@ namespace BlixthackByMordor.Controllers
 
             return RedirectToAction("Details", new { id = thread.Id });
         }
+
+
+        [Authorize]
+        [HttpPost("/Threads/{id:int}/Lock")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Lock(int id)
+
+        {
+            //Hämtar id på den som just nu är inloggad
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            //Hämtar username på den inloggade användaren
+            var username = User.FindFirstValue(ClaimTypes.Name);
+            if (username == null) return Unauthorized();
+
+            //Hämtar tråden från databasen med det id som kom i URL:en
+            var thread = await threadService.GetThreadById(id);
+            if (thread == null) return NotFound();
+            
+            //Controlelr skickar till ThreadService. thread = vilken tråd som skall låsas. username = vem som låser den. 
+            await threadService.LockThread(thread, username);
+
+            return RedirectToAction(nameof(Details), new { id = thread.Id });
+        }
     }
 }
