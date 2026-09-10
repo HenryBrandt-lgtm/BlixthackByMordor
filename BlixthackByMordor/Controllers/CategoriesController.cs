@@ -46,7 +46,38 @@ namespace BlixthackByMordor.Controllers
             return RedirectToAction("Index", "Home");
 
         }
-        
+        [Authorize]
+        [HttpGet("/Categories/{id:int}/Edit")]
+        public async Task<IActionResult> EditCategory(int id)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var category = await categoryService.GetCategoryById(id);
+            if (category == null) return NotFound();
+
+            return View("EditCategory", category);
+        }
+        [Authorize]
+        [HttpPost("/Categories/{id:int}/Edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCategory(int id, string categoryName)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var category = await categoryService.GetCategoryById(id);
+            if (category == null) return NotFound();
+
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                ModelState.AddModelError("categoryName", "Category name cannot be empty.");
+                return View("EditCategory", category);
+            }
+
+            category.Name = categoryName;
+            await categoryService.UpdateCategory(category);
+
+            return RedirectToAction("Index", "Home");
+        }
 
     }
 }
