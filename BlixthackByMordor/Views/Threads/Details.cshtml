@@ -44,7 +44,7 @@
                             </a>
                         }
 
-                        @if (isOwner)
+                        @if (isOwner || isAdmin)
                         {
                             <form asp-controller="Threads"
                                   asp-action="Delete"
