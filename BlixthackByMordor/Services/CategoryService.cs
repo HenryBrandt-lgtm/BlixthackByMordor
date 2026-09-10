@@ -18,5 +18,10 @@ namespace BlixthackByMordor.Services
             await db.SaveChangesAsync();
         }
 
+        public async Task<bool> CategoryExists(string categoryName)
+        {
+            return await db.Categories.AnyAsync(c => c.Name == categoryName);
+        }
+
     }
 }

@@ -1,1 +1,41 @@
 ﻿
+@{
+    ViewData["Title"] = "New Category";
+}
+
+<div class="thread-page">
+    <article class="thread-panel">
+        <header class="thread-panel__header">
+            <p class="thread-panel__category">New category</p>
+        </header>
+
+        <form asp-controller="Categories"
+              asp-action="CreateCategory"
+              method="post"
+              class="thread-compose">
+
+            <div class="thread-compose__field">
+                <label class="thread-compose__label" for="categoryName">Category name</label>
+
+                <input id="categoryName"
+                       name="categoryName"
+                       type="text"
+                       class="form-control thread-compose__control"
+                       maxlength="100"
+                       required
+                       placeholder="Enter category name" />
+                @Html.ValidationMessage("categoryName")
+            </div>
+
+            <div class="thread-compose__actions">
+                <button type="submit" class="btn btn-primary">Create category</button>
+
+                <a class="btn btn-outline-light answer-gate__secondary"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </article>
+</div>

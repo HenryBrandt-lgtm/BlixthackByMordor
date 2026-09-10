@@ -25,6 +25,17 @@ namespace BlixthackByMordor.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCategory(string categoryName)
         {
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                ModelState.AddModelError("categoryName", "Category name cannot be empty.");
+                return View();
+            }
+            if (await categoryService.CategoryExists(categoryName))
+            {
+                ModelState.AddModelError("categoryName", "Category already exists.");
+                return View();
+            }
+
             var category = new CategoryModel()
             {
                 Name = categoryName,
@@ -32,9 +43,10 @@ namespace BlixthackByMordor.Controllers
 
             };
             await categoryService.CreateNewCategory(category);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
 
         }
+        
 
     }
 }
