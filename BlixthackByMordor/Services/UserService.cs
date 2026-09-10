@@ -69,6 +69,9 @@ namespace BlixthackByMordor.Services
                     .ThenInclude(thread => thread.Category)
                 .Include(user => user.Answers!)
                     .ThenInclude(answer => answer.Thread)
+                .Include(user => user.Favorites!)
+                .ThenInclude(favorite => favorite.Answer)
+                
                 .FirstOrDefaultAsync(user => user.Id == id);
         }
 
