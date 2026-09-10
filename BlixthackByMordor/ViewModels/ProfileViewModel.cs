@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BlixthackByMordor.Models;
 
 namespace BlixthackByMordor.ViewModels
 {
@@ -70,6 +71,66 @@ namespace BlixthackByMordor.ViewModels
                     "The new passwords do not match.",
                     [nameof(ConfirmNewPassword)]);
             }
+        }
+
+        public static ProfileViewModel From(UserModel user, bool isOwner)
+        {
+            return new ProfileViewModel
+            {
+                Username = user.Username,
+                Email = isOwner ? user.Email : string.Empty,
+                AboutMe = user.AboutMe,
+                CreatedAt = user.CreatedAt,
+                IsOwner = isOwner,
+                Threads = MapThreads(user),
+                Answers = MapAnswers(user)
+            };
+        }
+
+        public void AttachActivity(UserModel user)
+        {
+            Threads = MapThreads(user);
+            Answers = MapAnswers(user);
+        }
+
+        private static IReadOnlyList<ProfileThreadItem> MapThreads(UserModel user)
+        {
+            return (user.Threads ?? [])
+                .OrderByDescending(thread => thread.CreatedAt)
+                .Select(thread => new ProfileThreadItem
+                {
+                    Id = thread.Id,
+                    Title = thread.Title,
+                    CategoryName = thread.Category.Name,
+                    CreatedAt = thread.CreatedAt
+                })
+                .ToList();
+        }
+
+        private static IReadOnlyList<ProfileAnswerItem> MapAnswers(UserModel user)
+        {
+            return (user.Answers ?? [])
+                .Where(answer => answer.Thread != null)
+                .OrderByDescending(answer => answer.CreatedAt)
+                .Select(answer => new ProfileAnswerItem
+                {
+                    ThreadId = answer.ThreadId,
+                    ThreadTitle = answer.Thread!.Title,
+                    Excerpt = Excerpt(answer.Content),
+                    CreatedAt = answer.CreatedAt
+                })
+                .ToList();
+        }
+
+        private static string Excerpt(string content, int maxLength = 140)
+        {
+            content = content.Trim();
+            if (content.Length <= maxLength)
+            {
+                return content;
+            }
+
+            return content[..maxLength].TrimEnd() + "…";
         }
     }
 

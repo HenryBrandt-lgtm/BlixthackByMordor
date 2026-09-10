@@ -123,47 +123,37 @@ namespace BlixthackByMordor.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Profile(int? id)
+        [Authorize]
+        [HttpGet("/Users/Profile")]
+        public async Task<IActionResult> MyProfile()
         {
-            if (id == null)
-            {
-                if (User.Identity?.IsAuthenticated != true)
-                {
-                    return Challenge();
-                }
+            var user = await GetCurrentUserWithActivityAsync();
+            if (user == null) return Unauthorized();
 
-                var currentUser = await _service.GetByIdWithActivityAsync(
-                    int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
-                if (currentUser == null) return Unauthorized();
+            return View("Profile", ProfileViewModel.From(user, isOwner: true));
+        }
 
-                return View(ToProfileViewModel(currentUser, isOwner: true));
-            }
-
-            var user = await _service.GetByIdWithActivityAsync(id.Value);
+        [HttpGet("/Users/Profile/{id:int}")]
+        public async Task<IActionResult> Profile(int id)
+        {
+            var user = await _service.GetByIdWithActivityAsync(id);
             if (user == null) return NotFound();
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isOwner = currentUserId != null && currentUserId == user.Id.ToString();
-
-            return View(ToProfileViewModel(user, isOwner));
+            var isOwner = CurrentUserId() == user.Id;
+            return View(ProfileViewModel.From(user, isOwner));
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("/Users/Profile")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Profile(ProfileViewModel model)
+        public async Task<IActionResult> MyProfile(ProfileViewModel model)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await GetCurrentUserWithActivityAsync();
             if (user == null) return Unauthorized();
-
-            model.CreatedAt = user.CreatedAt;
-            model.IsOwner = true;
 
             if (!ModelState.IsValid)
             {
-                await AttachActivityAsync(model, user.Id);
-                return View(model);
+                return RedisplayOwnProfile(model, user);
             }
 
             if (await _service.EmailTakenByOtherUserAsync(model.Email, user.Id))
@@ -172,8 +162,7 @@ namespace BlixthackByMordor.Controllers
                     nameof(model.Email),
                     "An account with this email already exists."
                 );
-                await AttachActivityAsync(model, user.Id);
-                return View(model);
+                return RedisplayOwnProfile(model, user);
             }
 
             var changingPassword = !string.IsNullOrWhiteSpace(model.NewPassword);
@@ -183,8 +172,7 @@ namespace BlixthackByMordor.Controllers
                     nameof(model.CurrentPassword),
                     "Current password is incorrect."
                 );
-                await AttachActivityAsync(model, user.Id);
-                return View(model);
+                return RedisplayOwnProfile(model, user);
             }
 
             var updated = await _service.UpdateProfileAsync(
@@ -198,84 +186,34 @@ namespace BlixthackByMordor.Controllers
             if (updated == null)
             {
                 ModelState.AddModelError("", "Could not update your profile.");
-                await AttachActivityAsync(model, user.Id);
-                return View(model);
+                return RedisplayOwnProfile(model, user);
             }
 
             await SignInUserAsync(updated);
             TempData["ProfileSaved"] = true;
-            return RedirectToAction(nameof(Profile));
+            return RedirectToAction(nameof(MyProfile));
         }
 
-        private async Task<UserModel?> GetCurrentUserAsync()
+        private async Task<UserModel?> GetCurrentUserWithActivityAsync()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = CurrentUserId();
             if (userId == null) return null;
 
-            return await _service.GetByIdAsync(int.Parse(userId));
+            return await _service.GetByIdWithActivityAsync(userId.Value);
         }
 
-        private async Task AttachActivityAsync(ProfileViewModel model, int userId)
+        private int? CurrentUserId()
         {
-            var user = await _service.GetByIdWithActivityAsync(userId);
-            if (user == null) return;
-
-            model.Threads = ToThreadItems(user);
-            model.Answers = ToAnswerItems(user);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return userId == null ? null : int.Parse(userId);
         }
 
-        private static ProfileViewModel ToProfileViewModel(UserModel user, bool isOwner)
+        private IActionResult RedisplayOwnProfile(ProfileViewModel model, UserModel user)
         {
-            return new ProfileViewModel
-            {
-                Username = user.Username,
-                Email = isOwner ? user.Email : string.Empty,
-                AboutMe = user.AboutMe,
-                CreatedAt = user.CreatedAt,
-                IsOwner = isOwner,
-                Threads = ToThreadItems(user),
-                Answers = ToAnswerItems(user)
-            };
-        }
-
-        private static IReadOnlyList<ProfileThreadItem> ToThreadItems(UserModel user)
-        {
-            return (user.Threads ?? [])
-                .OrderByDescending(thread => thread.CreatedAt)
-                .Select(thread => new ProfileThreadItem
-                {
-                    Id = thread.Id,
-                    Title = thread.Title,
-                    CategoryName = thread.Category.Name,
-                    CreatedAt = thread.CreatedAt
-                })
-                .ToList();
-        }
-
-        private static IReadOnlyList<ProfileAnswerItem> ToAnswerItems(UserModel user)
-        {
-            return (user.Answers ?? [])
-                .Where(answer => answer.Thread != null)
-                .OrderByDescending(answer => answer.CreatedAt)
-                .Select(answer => new ProfileAnswerItem
-                {
-                    ThreadId = answer.ThreadId,
-                    ThreadTitle = answer.Thread!.Title,
-                    Excerpt = Excerpt(answer.Content),
-                    CreatedAt = answer.CreatedAt
-                })
-                .ToList();
-        }
-
-        private static string Excerpt(string content, int maxLength = 140)
-        {
-            content = content.Trim();
-            if (content.Length <= maxLength)
-            {
-                return content;
-            }
-
-            return content[..maxLength].TrimEnd() + "…";
+            model.CreatedAt = user.CreatedAt;
+            model.IsOwner = true;
+            model.AttachActivity(user);
+            return View("Profile", model);
         }
 
         private async Task SignInUserAsync(UserModel user)
