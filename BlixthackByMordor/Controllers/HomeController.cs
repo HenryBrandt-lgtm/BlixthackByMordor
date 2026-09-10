@@ -1,16 +1,24 @@
 using BlixthackByMordor.Models;
 using BlixthackByMordor.Services;
+using BlixthackByMordor.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace BlixthackByMordor.Controllers
 {
-    public class HomeController(ThreadService threadService) : Controller
+    public class HomeController(ThreadService threadService, CategoryService categoryService) : Controller
     {
         public async Task<IActionResult> Index()
         {
             var threads = await threadService.GetLatestThreadsPerCategory();
-            return View(threads);
+            var categories = await categoryService.GetCategories();
+
+            var model = new HomeViewModel
+            {
+                Threads = threads,
+                Categories = categories
+            };
+            return View(model);
         }
 
         public IActionResult Privacy()

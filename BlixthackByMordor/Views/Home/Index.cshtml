@@ -1,8 +1,14 @@
-﻿@model IEnumerable<ThreadModel>
-@{
+﻿@using BlixthackByMordor.ViewModels
+@* @model IEnumerable<ThreadModel> *@
+@model HomeViewModel
+@* @{
     ViewData["Title"] = "Home Page";
     var categories = Model.GroupBy(thread => thread.Category.Name)
         .ToList();
+} *@
+@{
+    ViewData["Title"] = "Home Page";
+    var categories = Model.Categories;
 }
 
 @if (categories.Count == 0)
@@ -19,10 +25,12 @@ else
             <div class="col-12 col-md-6">
                 <section class="category-card h-100">
                     <header class="category-header">
-                        <h2 class="category-header__title">@category.Key</h2>
+                        @* <h2 class="category-header__title">@category.Key</h2> *@
+                        <h2 class="category-header__title">@category.Name</h2>
                     </header>
                     <ul class="thread-list">
-                        @foreach (var thread in category)
+                       @*  @foreach (var thread in category) *@
+                            @foreach (var thread in category.Threads)
                         {
                             <li class="thread-list__item">
                                 <a class="thread-item"
