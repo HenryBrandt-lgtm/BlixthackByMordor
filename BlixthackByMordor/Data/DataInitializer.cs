@@ -43,7 +43,8 @@ namespace BlixthackByMordor.Data
                 {
                     Username = "admin",
                     Email = "admin@example.com",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    IsAdmin = true
                 };
                 var hasher = new PasswordHasher<UserModel>();
                 adminUser.Password = hasher.HashPassword(adminUser, adminPw);
