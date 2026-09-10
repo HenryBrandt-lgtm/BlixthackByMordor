@@ -22,4 +22,5 @@ public class UserModel
     public ICollection<AnswerModel>? Answers { get; set; } = new List<AnswerModel>();
 
     public bool IsAdmin { get; set; } = false;
+    public ICollection<UserFavoriteModel>? Favorites { get; set; }= new List<UserFavoriteModel>();
 }

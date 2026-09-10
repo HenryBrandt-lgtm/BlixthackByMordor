@@ -14,6 +14,9 @@ namespace BlixthackByMordor.Services
 
         }
 
+
+
+
         public async Task<bool> EmailExistsAsync(string email)
         {
             return await _context.Users

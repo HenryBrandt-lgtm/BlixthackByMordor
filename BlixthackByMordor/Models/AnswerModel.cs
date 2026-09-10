@@ -14,6 +14,8 @@ public class AnswerModel
     [Required] public int UserId { get; set; }
     [Required] public UserModel User { get; set; }
     [Required] public DateTime CreatedAt { get; set; }
+    public ICollection<UserFavoriteModel>? Favorites { get; set; } = new List<UserFavoriteModel>();
+
 
     public int? ReplyId { get; set; }
 }
