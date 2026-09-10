@@ -77,7 +77,7 @@ namespace BlixthackByMordor.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(
-        LoginViewModel model, string? returnUrl)
+LoginViewModel model, string? returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -86,7 +86,7 @@ namespace BlixthackByMordor.Controllers
                 return View(model);
             }
 
-            var user = await _service.LoginAsync(model.Email,model.Password);
+            var user = await _service.LoginAsync(model.Email, model.Password);
 
 
             if (user == null)
@@ -99,7 +99,12 @@ namespace BlixthackByMordor.Controllers
                 return View(model);
             }
 
-            await SignInUserAsync(user);
+            var claims = new List<Claim>()
+            {
+                new Claim( ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.Username),
+                new Claim(ClaimTypes.Email,user.Email),
+            };
 
             if (user.IsAdmin)
             {
@@ -114,8 +119,9 @@ namespace BlixthackByMordor.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme, princpal);
 
             return RedirectAfterLogin(returnUrl);
-        }
 
+
+        }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
