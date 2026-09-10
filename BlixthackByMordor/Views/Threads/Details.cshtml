@@ -42,6 +42,11 @@
                             <a asp-controller="Threads" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light thread-panel__edit-btn">
                                 Edit
                             </a>
+
+                            <form asp-controller="Threads" asp-action="Lock" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('You want to lock the thread?')">
+                                <button type="submit" class="btn btn-outline-light">Lock Thread</button>
+                            </form>
+
                         }
 
                         @if (isOwner)
@@ -111,7 +116,14 @@
         </section>
 
             <section class="thread-panel__composer" aria-labelledby="reply-heading">
-                @if (isSignedIn)
+                @if (Model.ThreadLocked)
+            {
+                <h2>THREAD HAS BEEN LOCKED</h2>
+                <p>Locked by: @Model.ThreadLockedBy</p>
+                <p>Locked at: @Model.ThreadLockedAt</p>
+            }
+
+                else if (isSignedIn)
                 {
                     <h2 id="reply-heading" class="thread-panel__composer-title">Add an answer</h2>
                     <p class="thread-panel__composer-meta">Posting as @@@User.Identity!.Name</p>
