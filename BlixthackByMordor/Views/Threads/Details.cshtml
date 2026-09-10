@@ -34,27 +34,32 @@
             <div class="thread-panel__title-row">
                 <h1 class="thread-panel__title">@Model.Title</h1>
 
-                    @if (isAdmin)
-                    {
-                        <a asp-controller="Threads" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-secondary">
-                            Redigera
-                        </a>
-                    }
+                @if (isAdmin || isOwner)
+                {
+                    <div class="thread-panel__actions">
+                        @if (isAdmin)
+                        {
+                            <a asp-controller="Threads" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light thread-panel__edit-btn">
+                                Edit
+                            </a>
+                        }
 
-                    @if (isOwner)
-                    {
-                        <form asp-controller="Threads"
-                              asp-action="Delete"
-                              asp-route-id="@Model.Id"
-                              method="post"
-                              class="thread-panel__delete"
-                              onsubmit="return confirm('Delete this thread?');">
-                            <button type="submit" class="btn btn-outline-light thread-panel__delete-btn">
-                                Delete
-                            </button>
-                        </form>
-                    }
-                </div>
+                        @if (isOwner)
+                        {
+                            <form asp-controller="Threads"
+                                  asp-action="Delete"
+                                  asp-route-id="@Model.Id"
+                                  method="post"
+                                  class="thread-panel__delete"
+                                  onsubmit="return confirm('Delete this thread?');">
+                                <button type="submit" class="btn btn-outline-light thread-panel__delete-btn">
+                                    Delete
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
                 <p class="thread-panel__content">@Model.Content</p>
             </div>
 
