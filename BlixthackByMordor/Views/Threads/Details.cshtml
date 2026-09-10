@@ -42,30 +42,7 @@
                             <a asp-controller="Threads" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light thread-panel__edit-btn">
                                 Edit
                             </a>
-                            @if (Model.ThreadLocked)
-                            {
-
-                                <form asp-controller="Threads"
-                                      asp-action="Unlock"
-                                      asp-route-id="@Model.Id"
-                                      method="post" onsubmit="return confirm('Are you sure you want to UNLOCK the thread?')">
-                                    <button type="submit" class="btn btn-outline-light">
-                                        Unlock Thread
-                                    </button>
-
-                                </form>
-
-                            }
-                            else
-                            {
-                                <form asp-controller="Threads"
-                                      asp-action="Lock"
-                                      asp-route-id="@Model.Id"
-                                      method="post" onsubmit="return confirm('Are you sure you want to LOCK the thread?')">
-                                    <button type="submit" class="btn btn-outline-light">Lock Thread</button>
-                                </form>
-
-                            }
+                           
 
                         }
 
@@ -141,7 +118,21 @@
                 <h2>THREAD HAS BEEN LOCKED</h2>
                 <p>Locked by: @Model.ThreadLockedBy</p>
                 <p>Locked at: @Model.ThreadLockedAt</p>
+
+                if(isAdmin)
+                {
+                    <form asp-controller="Threads"
+                          asp-action="Unlock"
+                          asp-route-id="@Model.Id"
+                          method="post" onsubmit="return confirm('Are you sure you want to UNLOCK the thread?')">
+                        <button type="submit" class="btn btn-outline-light">
+                            Unlock Thread
+                        </button>
+
+                    </form>
+                }
             }
+            
 
             else if (isSignedIn)
             {
@@ -159,6 +150,21 @@
                               placeholder="Write your answer..."></textarea>
                     <button type="submit" class="btn btn-primary">Post answer</button>
                 </form>
+
+
+                @if (!Model.ThreadLocked && isAdmin)
+                {
+
+                    <form asp-controller="Threads"
+                          asp-action="Lock"
+                          asp-route-id="@Model.Id"
+                          method="post" onsubmit="return confirm('Are you sure you want to LOCK the thread?')">
+                        <button type="submit" class="btn btn-outline-light">Lock Thread</button>
+                    </form>                  
+
+                }
+            
+
             }
 
             else
