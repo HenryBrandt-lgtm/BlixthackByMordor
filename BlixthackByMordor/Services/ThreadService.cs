@@ -58,6 +58,16 @@ namespace BlixthackByMordor.Services
             await db.SaveChangesAsync();
 
         }
+
+        public async Task UnlockThread(ThreadModel thread)
+        {
+            thread.ThreadLocked = false;           
+
+            await db.SaveChangesAsync();
+
+        }
+
+
         public async Task UpdateThread(ThreadModel thread)
         {
             db.Threads.Update(thread);
