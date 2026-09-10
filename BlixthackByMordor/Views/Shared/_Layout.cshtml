@@ -1,91 +1,102 @@
 ﻿<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BlixthackByMordor</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm site-nav box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BlixthackByMordor</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm site-nav box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BlixthackByMordor</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Threads" asp-action="CreateThread">New thread</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-area=""
+                                   asp-controller="Categories"
+                                   asp-action="CreateCategory">
+                                    Create category
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="site-nav__auth">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Threads" asp-action="CreateThread">New thread</a>
-                        </li>
+                        var profileInitial = string.IsNullOrEmpty(User.Identity.Name)
+                            ? "?"
+                            : User.Identity.Name[0].ToString().ToUpperInvariant();
+                        <a class="site-nav__profile"
+                           asp-controller="Users"
+                           asp-action="MyProfile"
+                           title="Your profile"
+                           aria-label="Your profile">
+                            <span class="site-nav__avatar" aria-hidden="true">@profileInitial</span>
+                        </a>
+                        <form asp-controller="Users"
+                              asp-action="Logout"
+                              method="post"
+                              class="site-nav__logout">
+                            <button type="submit" class="btn btn-outline-light site-nav__btn">
+                                Log out
+                            </button>
+                        </form>
                     }
-                </ul>
+                    else
+                    {
+                        <a class="btn btn-outline-light site-nav__btn"
+                           asp-controller="Users"
+                           asp-action="Login">
+                            Log in
+                        </a>
+                        <a class="btn btn-primary site-nav__btn"
+                           asp-controller="Users"
+                           asp-action="Register">
+                            Register
+                        </a>
+                    }
+                </div>
             </div>
-            <div class="site-nav__auth">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    var profileInitial = string.IsNullOrEmpty(User.Identity.Name)
-                        ? "?"
-                        : User.Identity.Name[0].ToString().ToUpperInvariant();
-                    <a class="site-nav__profile"
-                       asp-controller="Users"
-                       asp-action="MyProfile"
-                       title="Your profile"
-                       aria-label="Your profile">
-                        <span class="site-nav__avatar" aria-hidden="true">@profileInitial</span>
-                    </a>
-                    <form asp-controller="Users"
-                          asp-action="Logout"
-                          method="post"
-                          class="site-nav__logout">
-                        <button type="submit" class="btn btn-outline-light site-nav__btn">
-                            Log out
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <a class="btn btn-outline-light site-nav__btn"
-                       asp-controller="Users"
-                       asp-action="Login">
-                        Log in
-                    </a>
-                    <a class="btn btn-primary site-nav__btn"
-                       asp-controller="Users"
-                       asp-action="Register">
-                        Register
-                    </a>
-                }
-            </div>
-        </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
-
-<footer class="border-top footer text-muted">
+        </nav>
+    </header>
     <div class="container">
-        &copy; 2026 - BlixthackByMordor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js"></script>
-@await RenderSectionAsync("Scripts", required: false)
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - BlixthackByMordor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
