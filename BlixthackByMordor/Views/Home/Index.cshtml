@@ -4,6 +4,12 @@
     var categories = Model.GroupBy(thread => thread.Category.Name)
         .ToList();
 }
+@if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert alert-success">
+        @message
+    </div>
+}
 
 @if (categories.Count == 0)
 {
