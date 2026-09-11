@@ -56,7 +56,30 @@ namespace BlixthackByMordor.Controllers
 
         }
 
-      
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> EditCategory(int categoryId, string newCategoryName)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var category = await categoryService.GetCategoryById(categoryId);
+            if (category == null) return NotFound();
+
+            if(string.IsNullOrWhiteSpace(newCategoryName))
+            {
+                ModelState.AddModelError("newCategoryName", "Category name cannot be empty");
+                return View(await categoryService.GetCategories());
+            }
+
+            category.Name = newCategoryName;
+
+            await categoryService.UpdateCategory(category);
+
+            
+
+            return RedirectToAction(nameof(CreateCategory));
+        }
+
 
 
     }

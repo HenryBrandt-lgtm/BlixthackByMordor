@@ -27,7 +27,13 @@ namespace BlixthackByMordor.Services
         {
             return await db.Categories.FirstOrDefaultAsync(c => c.Id == id);
 
-            
+
+        }
+
+        public async Task UpdateCategory(CategoryModel category)
+        {
+            db.Categories.Update(category);
+            await db.SaveChangesAsync();
         }
 
     }
