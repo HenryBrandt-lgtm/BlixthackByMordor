@@ -5,12 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlixthackByMordor.Controllers
 {
-    public class CategoriesController(CategoryService categoryService) : Controller
+    public class CategoriesController(CategoryService categoryService, ThreadService threadService) : Controller
     {
         private bool IsAdmin() => User.IsInRole("Admin");
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var category = await categoryService.GetCategoryById(id);
+            if (category == null) return NotFound();
+
+            var threads = await threadService.GetThreadsByCategoryId(id);
+            ViewBag.CategoryName = category.Name;
+            return View(threads);
         }
 
         [Authorize]

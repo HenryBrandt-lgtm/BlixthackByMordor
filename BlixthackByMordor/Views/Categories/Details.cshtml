@@ -1,0 +1,55 @@
+@model IEnumerable<ThreadModel>
+@{
+    var categoryName = ViewBag.CategoryName as string ?? "Category";
+    ViewData["Title"] = categoryName;
+}
+
+<div class="row category-grid">
+    <div class="col-12">
+        <section class="category-card">
+            <header class="category-header">
+                <h2 class="category-header__title">@categoryName</h2>
+                @if (Model.Any())
+                {
+                    <select class="form-select form-select-sm w-auto ms-auto bg-dark text-white" onchange="sortThreads(this)">
+                        <option value="latest">Latest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="most-answers">Most answers</option>
+                    </select>
+                }
+            </header>
+            @if (!Model.Any())
+            {
+                <p class="profile-activity__empty">No threads yet.</p>
+            }
+            else
+            {
+                <ul class="thread-list">
+                    @foreach (var thread in Model)
+                    {
+                        <li class="thread-list__item"
+                            data-created="@thread.CreatedAt.Ticks"
+                            data-answers="@thread.Answers.Count">
+                            <a class="thread-item"
+                               asp-controller="Threads"
+                               asp-action="Details"
+                               asp-route-id="@thread.Id">
+                                <div class="thread-item__content">
+                                    <h3 class="thread-item__title">@thread.Title</h3>
+                                    <div class="thread-item__byline">
+                                        <span>@@@thread.User.Username</span>
+                                        <span aria-hidden="true">&middot;</span>
+                                        <time datetime="@thread.CreatedAt.ToString("O")">
+                                            @thread.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                                        </time>
+                                    </div>
+                                </div>
+                                <span class="thread-panel__count ms-auto">Answers: @thread.Answers.Count</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
+</div>
