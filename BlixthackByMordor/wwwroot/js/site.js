@@ -39,3 +39,29 @@ document.querySelectorAll(".favorite-checkbox").forEach(checkbox => {
 
 });
 
+
+function sortThreads(select) {
+    const sortType = select.value;
+    const categorytCard = select.closest(".category-card")
+    const threadList = categorytCard.querySelector(".thread-list")
+    const threads = Array.from(threadList.querySelectorAll(".thread-list__item"))
+    
+    threads.sort((threadA, threadB) => {
+        if (sortType === "latest") {
+            return Number(threadB.dataset.created) - Number(threadA.dataset.created)
+        }
+
+        if (sortType === "oldest") {
+            return Number(threadA.dataset.created) - Number(threadB.dataset.created);
+        }
+
+        if (sortType === "most-answers") {
+            return Number(threadB.dataset.answers) - Number(threadA.dataset.answers);
+        }
+
+    })
+
+    threads.forEach(thread => {
+        threadList.appendChild(thread)
+    })
+}

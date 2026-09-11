@@ -26,11 +26,18 @@ else
                 <section class="category-card h-100">
                     <header class="category-header">
                         <h2 class="category-header__title">@category.Key</h2>
+                        <select class="form-select form-select-sm w-auto ms-auto bg-dark text-white" onchange="sortThreads(this)">
+                            <option value="latest">Latest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="most-answers">Most answers</option>
+                        </select>
                     </header>
                     <ul class="thread-list">
                         @foreach (var thread in category)
                         {
-                            <li class="thread-list__item">
+                            <li class="thread-list__item"data-created="@thread.CreatedAt.Ticks"
+                                data-answers="@thread.Answers.Count">
+
                                 <a class="thread-item"
                                    asp-controller="Threads"
                                    asp-action="Details"
