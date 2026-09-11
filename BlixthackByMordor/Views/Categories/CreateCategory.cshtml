@@ -1,4 +1,4 @@
-﻿
+﻿@model IEnumerable<CategoryModel>
 @{
     ViewData["Title"] = "New Category";
 }
@@ -37,5 +37,27 @@
                 </a>
             </div>
         </form>
+        
+        <h2>Edit Category Name</h2>
+        <form asp-controller="Categories"
+              asp-action="EditCategory"
+              method="post">
+
+        <select name="categoryId">
+            @foreach (var category in Model)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+        <label for="newCategoryName">New category name</label>
+        <input id="newCategoryName"
+               name="newCategoryName"
+               type="text"
+               maxlength="100"
+               placeholder="Enter new category name" />
+
+               <button type="sumbit">Edit Category</button> 
+        </form>
+
     </article>
 </div>
