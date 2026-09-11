@@ -102,6 +102,18 @@ namespace BlixthackByMordor.Controllers
                 ModelState.AddModelError("title", "Titel får inte vara tom.");
             }
 
+            var categories = await categoryService.GetCategories();
+            if (!categories.Any(c => c.Id == categoryId))
+            {
+                ModelState.AddModelError("categoryId", "Ogiltig kategori.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = categories;
+                return View("EditThread", thread);
+            }
+
             thread.Title = title;
             thread.CategoryId = categoryId;
 
