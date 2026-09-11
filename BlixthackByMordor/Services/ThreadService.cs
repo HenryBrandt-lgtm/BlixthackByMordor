@@ -34,10 +34,6 @@ namespace BlixthackByMordor.Services
             return await db.Threads
                 .Include(thread => thread.User)
                 .Include(thread => thread.Category)
-                .Include(thread => thread.Answers!.OrderBy(answer => answer.CreatedAt))
-                .ThenInclude(answer => answer.User)
-                .Include(thread => thread.Answers!)
-                .ThenInclude(answer => answer.Favorites)
                 .FirstOrDefaultAsync(thread => thread.Id == id);
         }
 
