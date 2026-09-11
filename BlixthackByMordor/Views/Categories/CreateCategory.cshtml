@@ -43,27 +43,46 @@
                 </a>
             </div>
         </form>
+
         
-        <h2>Edit Category Name</h2>
+
+        <span></span>
+
+
+
+        <header class="thread-panel__header" style="margin-top: 20px;">
+            <p class="thread-panel__category">Edit category</p>
+        </header>
         <form asp-controller="Categories"
               asp-action="EditCategory"
-              method="post">
+              method="post"
+              class="thread-compose">
 
-        <select name="categoryId">
-            @foreach (var category in Model)
-            {
-                <option value="@category.Id">@category.Name</option>
-            }
-        </select>
-        <label for="newCategoryName">New category name</label>
-        <input id="newCategoryName"
-               name="newCategoryName"
-               type="text"
-               maxlength="100"
-               placeholder="Enter new category name" />
-            @Html.ValidationMessage("newCategoryName")
+            <select name="categoryId">
+                @foreach (var category in Model)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+            <div class="thread-compose__field">
+                <label class="thread-compose__label" for="newCategoryName"></label>
+                <input id="newCategoryName"
+                       name="newCategoryName"
+                       type="text"
+                       class="form-control thread-compose__control"
+                       maxlength="100"
+                       placeholder="Enter new category name" />
+                @Html.ValidationMessage("newCategoryName")
+            </div>
+            <div class="thread-compose__actions">
+                <button type="submit" class="btn btn-primary">Edit Category</button>
 
-               <button type="submit">Edit Category</button> 
+                <a class="btn btn-outline-light answer-gate__secondary"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Cancel
+                </a>
+            </div>
         </form>
 
     </article>
