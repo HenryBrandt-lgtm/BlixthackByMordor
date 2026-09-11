@@ -147,6 +147,42 @@ a {
   color: var(--foreground);
 }
 
+.navbar.site-nav .dropdown-toggle::after {
+  vertical-align: 0.15em;
+}
+
+.site-nav__dropdown {
+  max-height: 20rem;
+  overflow-y: auto;
+  margin-top: 0.35rem;
+  padding: 0.35rem 0;
+  background-color: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1rem 2.5rem oklch(0 0 0 / 16%);
+}
+
+.site-nav__dropdown .dropdown-item {
+  color: var(--popover-foreground);
+  font-size: 0.875rem;
+}
+
+.site-nav__dropdown .dropdown-item:hover,
+.site-nav__dropdown .dropdown-item:focus {
+  color: var(--accent-foreground);
+  background-color: var(--accent);
+}
+
+.site-nav__dropdown .dropdown-item.active,
+.site-nav__dropdown .dropdown-item:active {
+  color: var(--primary-foreground);
+  background-color: var(--primary);
+}
+
+.site-nav__dropdown .dropdown-item.disabled {
+  color: var(--muted-foreground);
+}
+
 .site-nav__auth {
   display: flex;
   flex-wrap: wrap;

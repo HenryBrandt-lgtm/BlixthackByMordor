@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@inject CategoryService CategoryService
+@{
+    var navCategories = await CategoryService.GetCategories();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentCategoryId = currentController == "Categories" && currentAction == "Details"
+        ? ViewContext.RouteData.Values["id"]?.ToString()
+        : null;
+}
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="utf-8" />
@@ -24,6 +33,37 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Categories
+                            </a>
+                            <ul class="dropdown-menu site-nav__dropdown">
+                                @if (navCategories.Count == 0)
+                                {
+                                    <li>
+                                        <span class="dropdown-item disabled">No categories yet</span>
+                                    </li>
+                                }
+                                else
+                                {
+                                    @foreach (var category in navCategories)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item @(currentCategoryId == category.Id.ToString() ? "active" : null)"
+                                               asp-controller="Categories"
+                                               asp-action="Details"
+                                               asp-route-id="@category.Id">
+                                                @category.Name
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
