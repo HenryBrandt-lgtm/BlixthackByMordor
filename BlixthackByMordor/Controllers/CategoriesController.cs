@@ -14,11 +14,16 @@ namespace BlixthackByMordor.Controllers
         }
 
         [Authorize]
-        public IActionResult CreateCategory()
+        public async Task<IActionResult> CreateCategory()
         {
             if (!IsAdmin()) return Forbid();
 
-            return View();
+
+            // CreateCategory fortsätter styra Viewn, men hämtar alla kategorier
+            // så att Edit-sektionen kan använda dem i dropdown-menyn.
+            var categories = await categoryService.GetCategories();
+
+            return View(categories);
         }
 
         [Authorize]
