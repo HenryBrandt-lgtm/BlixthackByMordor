@@ -35,12 +35,12 @@ namespace BlixthackByMordor.Controllers
             if (string.IsNullOrWhiteSpace(categoryName))
             {
                 ModelState.AddModelError("categoryName", "Category name cannot be empty.");
-                return View();
+                return View(await categoryService.GetCategories());
             }
             if (await categoryService.CategoryExists(categoryName))
             {
                 ModelState.AddModelError("categoryName", "Category already exists.");
-                return View();
+                return View(await categoryService.GetCategories());
             }
 
             var category = new CategoryModel()
@@ -58,6 +58,10 @@ namespace BlixthackByMordor.Controllers
 
         }
 
+
+
+
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> EditCategory(int categoryId, string newCategoryName)
@@ -70,14 +74,14 @@ namespace BlixthackByMordor.Controllers
             if (string.IsNullOrWhiteSpace(newCategoryName))
             {
                 ModelState.AddModelError("newCategoryName", "Category name cannot be empty");
-                return View(await categoryService.GetCategories());
+                return View("CreateCategory", await categoryService.GetCategories());
             }
 
 
             if (await categoryService.CategoryExists(newCategoryName))
             {
                 ModelState.AddModelError("newCategoryName", "Category already exists.");
-                return View(await categoryService.GetCategories());
+                return View("CreateCategory", await categoryService.GetCategories());
             }
 
 

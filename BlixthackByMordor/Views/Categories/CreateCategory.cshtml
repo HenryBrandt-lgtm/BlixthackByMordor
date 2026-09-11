@@ -5,6 +5,12 @@
 
 <div class="thread-page">
     <article class="thread-panel">
+        @if (TempData["SuccessMessage"] is string message)
+        {
+            <div class="alert alert-success">
+                @message
+            </div>
+        }
         <header class="thread-panel__header">
             <p class="thread-panel__category">New category</p>
         </header>
@@ -55,6 +61,7 @@
                type="text"
                maxlength="100"
                placeholder="Enter new category name" />
+            @Html.ValidationMessage("newCategoryName")
 
                <button type="submit">Edit Category</button> 
         </form>
