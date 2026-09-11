@@ -43,6 +43,10 @@ namespace BlixthackByMordor.Controllers
 
             };
             await categoryService.CreateNewCategory(category);
+
+
+            TempData["SuccessMessage"] = $"Category {category.Name} created successfully";
+
             return RedirectToAction("Index", "Home");
 
         }
