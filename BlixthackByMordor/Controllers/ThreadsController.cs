@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace BlixthackByMordor.Controllers
 {
-    public class ThreadsController(CategoryService categoryService, ThreadService threadService) : Controller
+    public class ThreadsController(CategoryService categoryService, ThreadService threadService, AnswerService answerService) : Controller
     {
         public IActionResult Index()
         {
@@ -14,10 +14,19 @@ namespace BlixthackByMordor.Controllers
         }
 
         [HttpGet("/Threads/{id:int}")]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, int page = 1)
         {
             var thread = await threadService.GetThreadById(id);
             if (thread == null) return NotFound();
+
+            const int pageSize = 10;
+            var (answers, totalCount) = await answerService.GetAnswersForThread(id, page, pageSize);
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            ViewBag.Answers = answers;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalAnswers = totalCount;
 
             return View(thread);
         }
