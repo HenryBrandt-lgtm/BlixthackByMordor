@@ -20,9 +20,6 @@ namespace BlixthackByMordor.Services
         {
             return await db.Answers.FirstOrDefaultAsync(a => a.Id == id);
         }
-    }
-}
-
         public async Task<(List<AnswerModel> Answers, int TotalCount)> GetAnswersForThread(int threadId, int page, int pageSize = 10)
         {
             var query = db.Answers
@@ -42,4 +39,5 @@ namespace BlixthackByMordor.Services
         }
     }
 }
+
 

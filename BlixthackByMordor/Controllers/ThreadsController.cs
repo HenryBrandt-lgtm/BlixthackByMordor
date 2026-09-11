@@ -26,7 +26,6 @@ namespace BlixthackByMordor.Controllers
             ViewBag.Answers = answers;
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
-            ViewBag.TotalAnswers = totalCount;
 
             return View(thread);
         }
