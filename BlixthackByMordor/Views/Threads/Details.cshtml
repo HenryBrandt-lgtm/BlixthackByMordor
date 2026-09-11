@@ -2,7 +2,9 @@
 @model ThreadModel
 @{
     ViewData["Title"] = Model.Title;
-    var answers = Model.Answers?.ToList() ?? [];
+    var answers = ViewBag.Answers as List<AnswerModel> ?? new List<AnswerModel>();
+    var currentPage = (int)ViewBag.CurrentPage;
+    var totalPages = (int)ViewBag.TotalPages;
     var isSignedIn = User.Identity?.IsAuthenticated == true;
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     int.TryParse(currentUserId, out var UserId);
@@ -68,7 +70,7 @@
         <section class="thread-panel__answers" aria-labelledby="answers-heading">
             <div class="thread-panel__answers-head">
                 <h2 id="answers-heading" class="thread-panel__answers-title">Answers</h2>
-                <span class="thread-panel__count">@answers.Count</span>
+                <span class="thread-panel__count">@ViewBag.TotalAnswers</span>
             </div>
 
             @if (answers.Count == 0)
@@ -134,6 +136,62 @@
                         </li>
                     }
                 </ol>
+                @if (totalPages > 1)
+                {
+                    
+                    const int siblingCount = 1; // antal sibling sidor som visas bredvid aktuell sida
+                    var startPage = Math.Max(1, currentPage - siblingCount);
+                    var endPage = Math.Min(totalPages, currentPage + siblingCount);
+
+                    <nav aria-label="Answer pages" class="answer-pagination">
+                        <ul class="pagination">
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@(currentPage - 1)">
+                                    &laquo;
+                                </a>
+                            </li>
+                            @if (startPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="1">1</a>
+                                </li>
+                                if (startPage > 2)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                }
+                            }
+
+                            @for (var p = startPage; p <= endPage; p++)
+                            {
+                                <li class="page-item @(p == currentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@p">
+                                        @p
+                                    </a>
+                                </li>
+                            }
+                            @if (endPage < totalPages)
+                            {
+                                if (endPage < totalPages - 1)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                }
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@totalPages">@totalPages</a>
+                                </li>
+                            }                          
+
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@(currentPage + 1)">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
             }
         </section>
 
