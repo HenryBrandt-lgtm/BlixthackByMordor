@@ -25,10 +25,17 @@ document.querySelectorAll(".favorite-checkbox").forEach(checkbox => {
         console.log("Server response:", result);
 
         this.checked = result.isFavorite;
+
         if (!result.isFavorite) {
             this.closest(".thread-list__item").remove();
+            let count = document.querySelector("#favorite-count").innerHTML;
+            count--;
+            document.querySelector("#favorite-count").innerHTML = count;
+
+
         }
 
     });
 
 });
+

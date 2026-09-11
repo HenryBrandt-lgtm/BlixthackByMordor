@@ -197,7 +197,7 @@
     <section class="thread-panel" aria-labelledby="profile-answers-heading">
         <header class="thread-panel__header">
             <h2 id="profile-answers-heading" class="thread-panel__category">Favorite answers</h2>
-                <span class="thread-panel__count">@Model.FavoriteAnswers.Count</span>
+                <span id="favorite-count" class="thread-panel__count">@Model.FavoriteAnswers.Count</span>
         </header>
             @if (Model.FavoriteAnswers.Count == 0)
         {
