@@ -550,10 +550,11 @@ a {
 }
 
 .answer-item {
-  display: flex;
-  gap: 0.85rem;
-  padding: 0.95rem 0;
-  border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.85rem;
+    padding: 0.95rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
 }
 
 .answer-item:first-child {
@@ -985,7 +986,42 @@ a {
     outline: 2px solid #fff;
     outline-offset: 3px;
 }
-/*delete knappen*/
+
+/* pagination design*/
+.answer-pagination .pagination {
+    gap: 0.35rem;
+}
+
+.answer-pagination .page-item .page-link {
+    border: none;
+    border-radius: 999px;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: transparent;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    margin-top: 1rem;
+}
+
+    .answer-pagination .page-item .page-link:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
+
+.answer-pagination .page-item.active .page-link {
+    background-color: blue;
+    color: #fff;
+    font-weight: 600;
+}
+
+.answer-pagination .page-item.disabled .page-link {
+    color: #5a5f6a;
+    opacity: 0.5;
+    pointer-events: none;
+}/*delete knappen*/
 .answer-item__delete .btn {
     width: 22px;
     height: 22px;
