@@ -44,14 +44,19 @@ else
                                    asp-route-id="@thread.Id">
                                     <div class="thread-item__content">
                                         <h3 class="thread-item__title">@thread.Title</h3>
-                                        <div class="thread-item__byline">
+                                        <div class="thread-item__byline ">
                                             <span>@@@thread.User.Username</span>
+
                                             <span aria-hidden="true">&middot;</span>
                                             <time datetime="@thread.CreatedAt.ToString("O")">
                                                 @thread.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
                                             </time>
+
                                         </div>
+
                                     </div>
+                                    <span class="thread-panel__count ms-auto">Answers: @thread.Answers.Count</span>
+
                                 </a>
                             </li>
                         }
