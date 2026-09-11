@@ -11,6 +11,8 @@ namespace BlixthackByMordor.Services
             return await db.Threads
                 .Include(thread => thread.User)
                 .Include(thread => thread.Category)
+                .Include(thread => thread.Answers)
+
                 .OrderBy(thread => thread.Category.Name)
                 .ThenByDescending(thread => thread.CreatedAt)
                 .ToListAsync();
