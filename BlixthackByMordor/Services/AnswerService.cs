@@ -23,3 +23,23 @@ namespace BlixthackByMordor.Services
     }
 }
 
+        public async Task<(List<AnswerModel> Answers, int TotalCount)> GetAnswersForThread(int threadId, int page, int pageSize = 10)
+        {
+            var query = db.Answers
+                .Where(a => a.ThreadId == threadId)
+                .OrderBy(a => a.CreatedAt);
+
+            var totalCount = await query.CountAsync();
+
+            var answers = await query
+                .Include(a => a.User)
+                .Include(a => a.Favorites)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (answers, totalCount);
+        }
+    }
+}
+
