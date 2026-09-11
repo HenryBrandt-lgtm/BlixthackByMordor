@@ -29,6 +29,17 @@ namespace BlixthackByMordor.Services
                 .ToList();
         }
 
+        public async Task<List<ThreadModel>> GetThreadsByCategoryId(int categoryId)
+        {
+            return await db.Threads
+                .Include(thread => thread.User)
+                .Include(thread => thread.Category)
+                .Include(thread => thread.Answers)
+                .Where(thread => thread.CategoryId == categoryId)
+                .OrderByDescending(thread => thread.CreatedAt)
+                .ToListAsync();
+        }
+
         public async Task<ThreadModel?> GetThreadById(int id)
         {
             return await db.Threads
