@@ -8,7 +8,9 @@ namespace BlixthackByMordor.Services
     {
         public async Task<List<CategoryModel>> GetCategories()
         {
-            return await db.Categories.ToListAsync();
+            return await db.Categories
+                .OrderBy(category => category.Name)
+                .ToListAsync();
         }
 
         public async Task CreateNewCategory(CategoryModel category)
