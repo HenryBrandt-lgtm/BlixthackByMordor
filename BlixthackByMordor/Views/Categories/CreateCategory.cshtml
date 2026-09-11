@@ -58,7 +58,9 @@
               method="post"
               class="thread-compose">
 
-            <select name="categoryId">
+            <select name="categoryId"
+                    class="form-select form-select-sm w-auto bg-dark text-white">
+                
                 @foreach (var category in Model)
                 {
                     <option value="@category.Id">@category.Name</option>
@@ -71,6 +73,7 @@
                        type="text"
                        class="form-control thread-compose__control"
                        maxlength="100"
+                       required
                        placeholder="Enter new category name" />
                 @Html.ValidationMessage("newCategoryName")
             </div>
