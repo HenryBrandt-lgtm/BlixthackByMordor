@@ -75,7 +75,7 @@ namespace BlixthackByMordor.Controllers
 
             await categoryService.UpdateCategory(category);
 
-            
+            TempData["SuccessMessage"] = $"Category {category.Name} updated successfully";
 
             return RedirectToAction(nameof(CreateCategory));
         }
