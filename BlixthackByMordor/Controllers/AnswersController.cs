@@ -46,5 +46,23 @@ namespace BlixthackByMordor.Controllers
 
             return RedirectToAction(nameof(ThreadsController.Details), "Threads", new { id = threadId });
         }
+        [Authorize]
+        [HttpPost("/Answers/{id:int}/Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var answer = await answerService.GetAnswerById(id);
+            if (answer == null) return NotFound();
+
+            var isAdmin = User.IsInRole("Admin");
+            if (answer.UserId != int.Parse(userId) && !isAdmin) return Forbid();
+
+            await answerService.DeleteAnswer(answer);
+
+            return RedirectToAction(nameof(ThreadsController.Details), "Threads", new { id = answer.ThreadId });
+        }
     }
 }
