@@ -113,7 +113,7 @@
                                         <input type="checkbox"
                                                class="favorite-checkbox"
                                                data-answer-id="@answer.Id"
-                                        @(answer.Favorites?.Any(f => f.UserId == UserId) == true ? "checked" : "") />
+                                               @(answer.Favorites?.Any(f => f.UserId == UserId) == true ? "checked" : "") />
 
                                         <span class="favorite-icon">★</span>
                                         <span class="favorite-text">Favorite</span>
@@ -131,7 +131,36 @@
                                             </button>
                                         </form>
                                     }
+
                                 </div>
+                                
+                                @* create a button to submit an answer with a replyid in answerController *@
+                                <h2 id="reply-heading" class="thread-panel__composer-title">Reply</h2>
+                                <p class="thread-panel__composer-meta">Posting as @@@User.Identity!.Name</p>
+                                <form id="create-reply-form-@answer.Id" asp-controller="Answers" asp-action="CreateReply" method="post">
+                                    <input type="hidden" name="threadId" value="@answer.ThreadId" />
+                                    <input type="hidden" name="answerId" value="@answer.Id" />
+
+                                    <label class="visually-hidden" for="content-@answer.Id">Your answer</label>
+                                    <textarea id="content-@answer.Id"
+                              name="content"
+                              class="form-control thread-panel__textarea"
+                              rows="4"
+                              maxlength="1000"
+                              
+                              placeholder="Write your answer..."></textarea>
+                                </form>
+                                <div class="thread-panel__composer-actions">
+                                    <button type="submit" form="create-reply-form-@answer.Id" class="btn btn-primary">Post answer</button>
+                                    
+                                </div>
+                                
+
+                               @*  @if (@answer.ReplyId != null)
+                                {
+
+                                } *@
+
                             </div>
                         </li>
                     }
