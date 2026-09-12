@@ -19,7 +19,7 @@ namespace BlixthackByMordor.Controllers
             var thread = await threadService.GetThreadById(id);
             if (thread == null) return NotFound();
 
-            const int pageSize = 10;
+            const int pageSize = 100;
             var (answers, totalCount) = await answerService.GetAnswersForThread(id, page, pageSize);
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
