@@ -23,7 +23,7 @@ namespace BlixthackByMordor.Services
         public async Task<(List<AnswerModel> Answers, int TotalCount)> GetAnswersForThread(int threadId, int page, int pageSize = 10)
         {
             var query = db.Answers
-                .Where(a => a.ThreadId == threadId)
+                .Where(a => a.ThreadId == threadId && a.ReplyId == null)
                 .OrderBy(a => a.CreatedAt);
 
             var totalCount = await query.CountAsync();
