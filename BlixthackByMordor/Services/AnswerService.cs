@@ -37,7 +37,23 @@ namespace BlixthackByMordor.Services
 
             return (answers, totalCount);
         }
+
+        public async Task<List<AnswerModel>> GetRepliesForAnswer(int answerId)
+        {
+
+            var answers = await db.Answers
+                .Where(a => a.ReplyId == answerId)
+                .Include(a => a.User)
+                .ToListAsync();
+
+            return (answers);
+        }
+
+
+
+
     }
+
 }
 
 

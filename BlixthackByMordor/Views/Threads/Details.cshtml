@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = Model.Title;
     var answers = ViewBag.Answers as List<AnswerModel> ?? new List<AnswerModel>();
+    var replies = ViewBag.Replies as Dictionary<int, List<AnswerModel>>
+                  ?? new Dictionary<int, List<AnswerModel>>();
     var currentPage = (int)ViewBag.CurrentPage;
     var totalPages = (int)ViewBag.TotalPages;
     var isSignedIn = User.Identity?.IsAuthenticated == true;
@@ -115,7 +117,7 @@
                                             <input type="checkbox"
                                                    class="favorite-checkbox"
                                                    data-answer-id="@answer.Id"
-                                            @(answer.Favorites?.Any(f => f.UserId == UserId) == true ? "checked" : "") />
+                                                   @(answer.Favorites?.Any(f => f.UserId == UserId) == true ? "checked" : "") />
 
                                             <span class="favorite-icon">★</span>
                                             <span class="favorite-text">Favorite</span>
@@ -162,44 +164,49 @@
                                 </div>
 
                             </li>
-
-                            @foreach (var reply in answers)
+                            @if (replies.ContainsKey(answer.Id) && replies[answer.Id].Any())
                             {
-                                if (reply.ReplyId == answer.Id)
-                                {
-                                    <div class="ms-4 mt-3">
-                                        <div class="card bg-dark border-secondary">
-                                            <div class="card-body py-3">
+                                <div class="replies">
+                                    @foreach (var reply in replies[answer.Id])
+                                    {
+                                      
+                                        <div class="ms-4 mt-3">
+                                            <div class="card bg-dark border-secondary">
+                                                <div class="card-body py-3">
 
-                                                <div class="d-flex align-items-center gap-2 mb-2">
-                                                    <div class="rounded-circle bg-secondary text-white
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="rounded-circle bg-secondary text-white
                                                         d-flex align-items-center justify-content-center"
-                                                         style="width: 36px; height: 36px;">
-                                                        @reply.User.Username[0].ToString().ToUpperInvariant()
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="fw-semibold text-white">
-                                                            @@@reply.User.Username
+                                                             style="width: 36px; height: 36px;">
+                                                            @reply.User.Username[0].ToString().ToUpperInvariant()
                                                         </div>
 
-                                                        <small class="text-secondary">
-                                                            @reply.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                                                            Reply to: @answer.Content
+                                                        <div>
+                                                            <div class="fw-semibold text-white">
+                                                                @@@reply.User.Username
+                                                            </div>
 
-                                                        </small>
+                                                            <small class="text-secondary">
+                                                                @reply.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                                                                Reply to: @answer.Content
+
+                                                            </small>
+                                                        </div>
                                                     </div>
+
+                                                    <p class="card-text text-light mb-0">
+                                                        @reply.Content
+                                                    </p>
+
                                                 </div>
-
-                                                <p class="card-text text-light mb-0">
-                                                    @reply.Content
-                                                </p>
-
                                             </div>
                                         </div>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             }
+                        
+
+                          
 
                           
                         }
