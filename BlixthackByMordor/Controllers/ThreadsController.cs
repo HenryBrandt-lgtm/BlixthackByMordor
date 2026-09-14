@@ -19,9 +19,22 @@ namespace BlixthackByMordor.Controllers
             var thread = await threadService.GetThreadById(id);
             if (thread == null) return NotFound();
 
-            const int pageSize = 100;
+            const int pageSize = 10;
             var (answers, totalCount) = await answerService.GetAnswersForThread(id, page, pageSize);
+
+            var replies = new Dictionary<int, List<AnswerModel>>();
+
+            foreach (var answer in answers)
+            {
+                replies[answer.Id] =
+                    await answerService.GetRepliesForAnswer(answer.Id);
+            }
+
+            ViewBag.Replies = replies;
+
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+           
 
             ViewBag.Answers = answers;
             ViewBag.CurrentPage = page;
