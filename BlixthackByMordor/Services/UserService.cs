@@ -36,11 +36,9 @@ namespace BlixthackByMordor.Services
             {
                 Username = username,
                 Email = email,
-                CreatedAt = DateTime.UtcNow,
-                Password = password
+                CreatedAt = DateTime.UtcNow
             };
-
-
+            user.Password = HashPassword(user, password);
 
             // Lägg till användaren i databasen
             _context.Users.Add(user);
@@ -53,8 +51,38 @@ namespace BlixthackByMordor.Services
 
         public async Task<UserModel?> LoginAsync(string email, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null || !VerifyPassword(user, password))
+            {
+                return null;
+            }
+
+            if (NeedsPasswordRehash(user, password))
+            {
+                user.Password = HashPassword(user, password);
+                await _context.SaveChangesAsync();
+            }
+
             return user;
+        }
+
+        public bool VerifyPassword(UserModel user, string password)
+        {
+            try
+            {
+                var result = Hasher.VerifyHashedPassword(user, user.Password, password);
+                if (result is PasswordVerificationResult.Success
+                    or PasswordVerificationResult.SuccessRehashNeeded)
+                {
+                    return true;
+                }
+            }
+            catch (FormatException)
+            {
+                // Stored value is leftover plaintext, not an Identity hash.
+            }
+
+            return user.Password == password;
         }
 
         public async Task<UserModel?> GetByIdAsync(int id)
@@ -100,11 +128,29 @@ namespace BlixthackByMordor.Services
 
             if (!string.IsNullOrWhiteSpace(newPassword))
             {
-                user.Password = newPassword;
+                user.Password = HashPassword(user, newPassword);
             }
 
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        private static readonly PasswordHasher<UserModel> Hasher = new();
+
+        private static string HashPassword(UserModel user, string password) =>
+            Hasher.HashPassword(user, password);
+
+        private static bool NeedsPasswordRehash(UserModel user, string password)
+        {
+            try
+            {
+                return Hasher.VerifyHashedPassword(user, user.Password, password)
+                    == PasswordVerificationResult.SuccessRehashNeeded;
+            }
+            catch (FormatException)
+            {
+                return true;
+            }
         }
     }
 }

@@ -184,7 +184,7 @@ LoginViewModel model, string? returnUrl)
             }
 
             var changingPassword = !string.IsNullOrWhiteSpace(model.NewPassword);
-            if (changingPassword && user.Password != model.CurrentPassword)
+            if (changingPassword && !_service.VerifyPassword(user, model.CurrentPassword ?? string.Empty))
             {
                 ModelState.AddModelError(
                     nameof(model.CurrentPassword),
