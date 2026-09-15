@@ -43,7 +43,8 @@ namespace BlixthackByMordor.Data
                 {
                     Username = "admin",
                     Email = "admin@example.com",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    IsAdmin = true
                 };
                 var hasher = new PasswordHasher<UserModel>();
                 adminUser.Password = hasher.HashPassword(adminUser, adminPw);
@@ -60,7 +61,7 @@ namespace BlixthackByMordor.Data
         new { Title = "AI-agenter i vardagen", Content = "Hur mycket av ert arbete har AI tagit över hittills?", Category = "Technology" },
 
         new { Title = "Bästa spelen hittills i år", Content = "Vad har ni spelat mest av under 2026?", Category = "Gaming" },
-        new { Title = "Näsata handkontroller", Content = "Är det värt att byta till en pro-controller eller räcker standard?", Category = "Gaming" },
+        new { Title = "Nästa handkontroller", Content = "Är det värt att byta till en pro-controller eller räcker standard?", Category = "Gaming" },
 
         new { Title = "Gnaget", Content = "Kan ungdomarna i gnaget hämta hem guldet i år?(2026)", Category = "Sports" },
         new { Title = "VM-kval snackis", Content = "Hur ser ni på läget inför kvalet?", Category = "Sports" },
@@ -85,7 +86,7 @@ namespace BlixthackByMordor.Data
                         Content = t.Content,
                         User = admin,
                         Category = category,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.UtcNow
                     });
                 }
             }

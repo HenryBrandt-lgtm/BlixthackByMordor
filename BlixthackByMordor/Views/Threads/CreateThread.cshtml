@@ -3,22 +3,22 @@
     ViewData["Title"] = "New thread";
 }
 
-<div class="thread-page">
-    <article class="thread-panel">
-        <header class="thread-panel__header">
-            <p class="thread-panel__category">New thread</p>
-            <p class="thread-panel__byline">Posting as @@@User.Identity!.Name</p>
+<div class="page">
+    <article class="panel">
+        <header class="panel-header">
+            <p class="eyebrow">New thread</p>
+            <p class="byline">Posting as @@@User.Identity!.Name</p>
         </header>
 
         <form asp-controller="Threads"
               asp-action="CreateThread"
               method="post"
-              class="thread-compose">
-            <div class="thread-compose__field">
-                <label class="thread-compose__label" for="categoryId">Category</label>
+              class="panel-body">
+            <div class="field-group">
+                <label class="field-label" for="categoryId">Category</label>
                 <select id="categoryId"
                         name="categoryId"
-                        class="form-select thread-compose__control"
+                        class="field"
                         required>
                     <option value="">Choose a category</option>
                     @foreach (var category in Model)
@@ -28,40 +28,33 @@
                 </select>
             </div>
 
-            <div class="thread-compose__field">
-                <label class="thread-compose__label" for="title">Title</label>
+            <div class="field-group">
+                <label class="field-label" for="title">Title</label>
                 <input id="title"
                        name="title"
                        type="text"
-                       class="form-control thread-compose__control"
+                       class="field"
                        minlength="10"
                        maxlength="100"
                        required
                        placeholder="Give your thread a clear title" />
-                <p class="thread-compose__hint">10–100 characters</p>
+                <p class="field-hint">10–100 characters</p>
             </div>
 
-            <div class="thread-compose__field">
-                <label class="thread-compose__label" for="content">Post</label>
+            <div class="field-group">
+                <label class="field-label" for="content">Post</label>
                 <textarea id="content"
                           name="content"
-                          class="form-control thread-compose__control thread-compose__textarea"
+                          class="field min-h-40 resize-y"
                           rows="8"
                           minlength="1"
                           maxlength="1000"
                           required
                           placeholder="Write the opening post..."></textarea>
-                <p class="thread-compose__hint">Up to 1000 characters</p>
+                <p class="field-hint">Up to 1000 characters</p>
             </div>
 
-            <div class="thread-compose__actions">
-                <button type="submit" class="btn btn-primary">Create thread</button>
-                <a class="btn btn-outline-light answer-gate__secondary"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Cancel
-                </a>
-            </div>
+            <partial name="_FormActions" model='FormActionsViewModel.CancelHome("Create thread")' />
         </form>
     </article>
 </div>

@@ -7,6 +7,10 @@
     <UserSecretsId>417a086c-8ddd-4ca6-baa4-483e7085a6e2</UserSecretsId>
   </PropertyGroup>
 
+  <Target Name="TailwindCss" BeforeTargets="Build">
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11">

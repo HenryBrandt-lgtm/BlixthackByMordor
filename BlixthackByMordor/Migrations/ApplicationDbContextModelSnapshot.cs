@@ -96,6 +96,15 @@ namespace BlixthackByMordor.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("ThreadLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ThreadLockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ThreadLockedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -113,6 +122,32 @@ namespace BlixthackByMordor.Migrations
                     b.ToTable("Threads");
                 });
 
+            modelBuilder.Entity("BlixthackByMordor.Models.UserFavoriteModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnswerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFavorite");
+                });
+
             modelBuilder.Entity("BlixthackByMordor.Models.UserModel", b =>
                 {
                     b.Property<int>("Id")
@@ -121,6 +156,11 @@ namespace BlixthackByMordor.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AboutMe")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -128,6 +168,9 @@ namespace BlixthackByMordor.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -181,6 +224,30 @@ namespace BlixthackByMordor.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BlixthackByMordor.Models.UserFavoriteModel", b =>
+                {
+                    b.HasOne("BlixthackByMordor.Models.AnswerModel", "Answer")
+                        .WithMany("Favorites")
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BlixthackByMordor.Models.UserModel", "User")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BlixthackByMordor.Models.AnswerModel", b =>
+                {
+                    b.Navigation("Favorites");
+                });
+
             modelBuilder.Entity("BlixthackByMordor.Models.CategoryModel", b =>
                 {
                     b.Navigation("Threads");
@@ -194,6 +261,8 @@ namespace BlixthackByMordor.Migrations
             modelBuilder.Entity("BlixthackByMordor.Models.UserModel", b =>
                 {
                     b.Navigation("Answers");
+
+                    b.Navigation("Favorites");
 
                     b.Navigation("Threads");
                 });

@@ -1,0 +1,22 @@
+@model ThreadModel
+@{
+    var replies = Model.Answers?.Count ?? 0;
+}
+<li data-thread-item
+    data-created="@Model.CreatedAt.Ticks"
+    data-answers="@replies">
+    <a class="thread-row"
+       asp-controller="Threads"
+       asp-action="Details"
+       asp-route-id="@Model.Id">
+        <div class="min-w-0">
+            <h3 class="thread-row-title">@Model.Title</h3>
+            <div class="byline">
+                <span>@@@Model.User.Username</span>
+                <span aria-hidden="true">&middot;</span>
+                <time datetime="@Model.CreatedAt.ToString("O")">@FormatAge(Model.CreatedAt)</time>
+            </div>
+        </div>
+        <span class="count-badge">@replies</span>
+    </a>
+</li>

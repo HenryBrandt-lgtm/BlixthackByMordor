@@ -1,0 +1,120 @@
+@model CommentViewModel
+@{
+    var answer = Model.Answer;
+    var nested = Model.Nested;
+    var liClass = Model.IsNested ? "comment-nested" : "comment";
+    var avatarClass = Model.IsNested ? "avatar avatar-sm" : "avatar";
+    var bodyClass = Model.IsNested ? "prose-body mt-1" : "prose-body mt-1.5";
+}
+<li class="@liClass">
+    <a class="avatar-link"
+       asp-controller="Users"
+       asp-action="Profile"
+       asp-route-id="@answer.UserId"
+       aria-label="@answer.User.Username's profile">
+        <span class="@avatarClass" aria-hidden="true">@Initial(answer.User.Username)</span>
+    </a>
+    <div class="comment-body">
+        <div class="comment-head">
+            <div class="byline">
+                <a class="author-link"
+                   asp-controller="Users"
+                   asp-action="Profile"
+                   asp-route-id="@answer.UserId">
+                    @@@answer.User.Username
+                </a>
+                <span aria-hidden="true">&middot;</span>
+                <time datetime="@answer.CreatedAt.ToString("O")">@FormatAge(answer.CreatedAt)</time>
+            </div>
+            @if (!Model.IsNested)
+            {
+                <div class="comment-icons">
+                    <label class="favorite favorite-icon">
+                        <input type="checkbox"
+                               class="favorite-checkbox peer sr-only"
+                               data-answer-id="@answer.Id"
+                               @(Model.IsFavorited ? "checked" : "") />
+                        <span class="favorite-star" aria-hidden="true">★</span>
+                        <span class="sr-only">Favorite</span>
+                    </label>
+                    @if (Model.CanDelete)
+                    {
+                        <form asp-controller="Answers"
+                              asp-action="Delete"
+                              asp-route-id="@answer.Id"
+                              method="post"
+                              onsubmit="return confirm('Delete this answer?');">
+                            <button type="submit" class="btn btn-outline comment-icon text-destructive hover:border-destructive hover:text-destructive" aria-label="Delete answer">
+                                <partial name="_IconTrash" />
+                            </button>
+                        </form>
+                    }
+                </div>
+            }
+            else if (Model.CanDelete)
+            {
+                <div class="comment-icons">
+                    <form asp-controller="Answers"
+                          asp-action="Delete"
+                          asp-route-id="@answer.Id"
+                          method="post"
+                          onsubmit="return confirm('Delete this reply?');">
+                        <button type="submit" class="btn btn-outline comment-icon text-destructive hover:border-destructive hover:text-destructive" aria-label="Delete reply">
+                            <partial name="_IconTrash" />
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+        <p class="@bodyClass">@answer.Content</p>
+        @if (!Model.IsNested && (Model.CanReply || nested.Count > 0))
+        {
+            <div class="comment-actions">
+                @if (Model.CanReply)
+                {
+                    <button type="button" class="comment-action" data-reply-toggle="@answer.Id">
+                        Reply@(nested.Count > 0 ? $" · {nested.Count}" : "")
+                    </button>
+                }
+                else if (nested.Count > 0)
+                {
+                    <span class="px-2 py-1 text-xs text-muted-foreground">@nested.Count @(nested.Count == 1 ? "reply" : "replies")</span>
+                }
+            </div>
+        }
+
+        @if (!Model.IsNested && nested.Count > 0)
+        {
+            <ol class="comment-thread">
+                @foreach (var reply in nested)
+                {
+                    <partial name="_Comment" model="Model.ForNested(reply)" />
+                }
+            </ol>
+        }
+
+        @if (!Model.IsNested && Model.CanReply)
+        {
+            <form id="create-reply-form-@answer.Id"
+                  class="comment-composer"
+                  hidden
+                  asp-controller="Answers"
+                  asp-action="CreateReply"
+                  method="post">
+                <input type="hidden" name="threadId" value="@answer.ThreadId" />
+                <input type="hidden" name="answerId" value="@answer.Id" />
+                <label class="sr-only" for="content-@answer.Id">Your reply</label>
+                <textarea id="content-@answer.Id"
+                          name="content"
+                          class="field"
+                          rows="3"
+                          maxlength="1000"
+                          placeholder="Write a reply..."></textarea>
+                <div class="mt-2.5 flex items-center gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">Post reply</button>
+                    <button type="button" class="comment-action" data-reply-cancel="@answer.Id">Cancel</button>
+                </div>
+            </form>
+        }
+    </div>
+</li>

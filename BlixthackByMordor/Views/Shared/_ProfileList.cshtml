@@ -1,0 +1,27 @@
+@model ProfileListViewModel
+<section class="panel min-w-0" aria-labelledby="@Model.HeadingId">
+    <header class="panel-header">
+        <h2 id="@Model.HeadingId" class="eyebrow">@Model.Title</h2>
+        @if (Model.CountId is string countId)
+        {
+            <span id="@countId" class="count-badge">@Model.Count</span>
+        }
+        else
+        {
+            <span class="count-badge">@Model.Count</span>
+        }
+    </header>
+    @if (Model.Items.Count == 0)
+    {
+        <p class="empty">@Model.EmptyText</p>
+    }
+    else
+    {
+        <ul class="thread-list">
+            @foreach (var item in Model.Items)
+            {
+                <partial name="_ActivityRow" model="item" />
+            }
+        </ul>
+    }
+</section>

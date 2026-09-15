@@ -1,50 +1,93 @@
 ﻿@model IEnumerable<ThreadModel>
 @{
-    ViewData["Title"] = "Home Page";
-    var categories = Model.GroupBy(thread => thread.Category.Name)
+    ViewData["Title"] = "Home";
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var categories = Model
+        .GroupBy(thread => thread.Category.Name)
+        .Select(group => new
+        {
+            Name = group.Key,
+            Id = group.First().Category.Id,
+            Threads = group.ToList()
+        })
         .ToList();
+
+    const int previewCount = 5;
 }
+
+<partial name="_Flash" model="null" />
+<partial name="_PageHeader" model='new PageHeaderViewModel { Title = "Categories / Threads", ShowNewThread = isSignedIn }' />
 
 @if (categories.Count == 0)
 {
-    <div class="text-center text-muted py-5">
-        <p class="mb-0">No threads yet.</p>
+    <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border px-6 py-20 text-center">
+        <p class="font-medium text-foreground">No threads yet</p>
+        <p class="mt-1 text-sm text-muted-foreground">Be the first to start a conversation.</p>
+        @if (isSignedIn)
+        {
+            <a class="btn btn-primary mt-5" asp-controller="Threads" asp-action="CreateThread">New thread</a>
+        }
     </div>
 }
 else
 {
-    <div class="row category-grid">
+    <nav class="mb-8 flex flex-wrap gap-2" aria-label="Categories">
         @foreach (var category in categories)
         {
-            <div class="col-12 col-md-6">
-                <section class="category-card h-100">
-                    <header class="category-header">
-                        <h2 class="category-header__title">@category.Key</h2>
-                    </header>
-                    <ul class="thread-list">
-                        @foreach (var thread in category)
-                        {
-                            <li class="thread-list__item">
-                                <a class="thread-item"
-                                   asp-controller="Threads"
-                                   asp-action="Details"
-                                   asp-route-id="@thread.Id">
-                                    <div class="thread-item__content">
-                                        <h3 class="thread-item__title">@thread.Title</h3>
-                                        <div class="thread-item__byline">
-                                            <span>@@@thread.User.Username</span>
-                                            <span aria-hidden="true">&middot;</span>
-                                            <time datetime="@thread.CreatedAt.ToString("O")">
-                                                @thread.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                                            </time>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </section>
-            </div>
+            <a class="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-sm text-muted-foreground no-underline transition-colors hover:bg-accent hover:text-accent-foreground"
+               asp-controller="Categories"
+               asp-action="Details"
+               asp-route-id="@category.Id">
+                @category.Name
+                <span class="tabular-nums text-xs">@category.Threads.Count</span>
+            </a>
+        }
+    </nav>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        @foreach (var category in categories)
+        {
+            var preview = category.Threads.Take(previewCount).ToList();
+            var remaining = category.Threads.Count - preview.Count;
+
+            <section data-category-card class="panel flex h-full flex-col">
+                <header class="panel-header">
+                    <div class="flex min-w-0 items-center gap-2">
+                        <h2 class="eyebrow">
+                            <a class="text-foreground no-underline hover:text-primary"
+                               asp-controller="Categories"
+                               asp-action="Details"
+                               asp-route-id="@category.Id">
+                                @category.Name
+                            </a>
+                        </h2>
+                        <span class="count-badge">@category.Threads.Count</span>
+                    </div>
+                    @if (preview.Count > 1)
+                    {
+                        <partial name="_SortMenu" />
+                    }
+                </header>
+
+                <ul data-thread-list class="thread-list">
+                    @foreach (var thread in preview)
+                    {
+                        <partial name="_ThreadRow" model="thread" />
+                    }
+                </ul>
+
+                @if (remaining > 0)
+                {
+                    <div class="px-2 pb-2">
+                        <a class="thread-row text-sm text-muted-foreground"
+                           asp-controller="Categories"
+                           asp-action="Details"
+                           asp-route-id="@category.Id">
+                            View all · @remaining more
+                        </a>
+                    </div>
+                }
+            </section>
         }
     </div>
 }

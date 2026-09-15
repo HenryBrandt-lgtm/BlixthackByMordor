@@ -1,0 +1,7 @@
+@model string?
+@if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert-success @Model" role="status">
+        @message
+    </div>
+}

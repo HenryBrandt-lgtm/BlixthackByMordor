@@ -19,4 +19,9 @@ public class ThreadModel
     [Required] public DateTime CreatedAt { get; set; }
 
     public ICollection<AnswerModel>? Answers { get; set; } = new List<AnswerModel>();
+
+    public bool ThreadLocked { get; set; }
+    public DateTime? ThreadLockedAt { get; set; }
+
+    public string? ThreadLockedBy { get; set; }
 }

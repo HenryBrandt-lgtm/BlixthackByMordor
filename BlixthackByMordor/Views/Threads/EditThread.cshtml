@@ -1,0 +1,50 @@
+﻿@model ThreadModel
+@{
+    ViewData["Title"] = "Edit thread";
+    var categories = ViewBag.Categories as List<CategoryModel> ?? new List<CategoryModel>();
+}
+
+<div class="page">
+    <article class="panel">
+        <header class="panel-header">
+            <p class="eyebrow">Edit thread</p>
+        </header>
+
+        <form asp-controller="Threads"
+              asp-action="Edit"
+              asp-route-id="@Model.Id"
+              method="post"
+              class="panel-body">
+            <div class="field-group">
+                <label class="field-label" for="categoryId">Category</label>
+                <select id="categoryId"
+                        name="categoryId"
+                        class="field"
+                        required>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id" selected="@(category.Id == Model.CategoryId)">
+                            @category.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label" for="title">Title</label>
+                <input id="title"
+                       name="title"
+                       type="text"
+                       class="field"
+                       value="@Model.Title"
+                       minlength="10"
+                       maxlength="100"
+                       required
+                       placeholder="Give your thread a clear title" />
+                <p class="field-hint">10–100 characters</p>
+            </div>
+
+            <partial name="_FormActions" model='FormActionsViewModel.CancelThread("Save changes", Model.Id)' />
+        </form>
+    </article>
+</div>

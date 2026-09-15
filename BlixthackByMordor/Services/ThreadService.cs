@@ -11,6 +11,8 @@ namespace BlixthackByMordor.Services
             return await db.Threads
                 .Include(thread => thread.User)
                 .Include(thread => thread.Category)
+                .Include(thread => thread.Answers)
+
                 .OrderBy(thread => thread.Category.Name)
                 .ThenByDescending(thread => thread.CreatedAt)
                 .ToListAsync();
@@ -27,13 +29,22 @@ namespace BlixthackByMordor.Services
                 .ToList();
         }
 
+        public async Task<List<ThreadModel>> GetThreadsByCategoryId(int categoryId)
+        {
+            return await db.Threads
+                .Include(thread => thread.User)
+                .Include(thread => thread.Category)
+                .Include(thread => thread.Answers)
+                .Where(thread => thread.CategoryId == categoryId)
+                .OrderByDescending(thread => thread.CreatedAt)
+                .ToListAsync();
+        }
+
         public async Task<ThreadModel?> GetThreadById(int id)
         {
             return await db.Threads
                 .Include(thread => thread.User)
                 .Include(thread => thread.Category)
-                .Include(thread => thread.Answers!.OrderBy(answer => answer.CreatedAt))
-                    .ThenInclude(answer => answer.User)
                 .FirstOrDefaultAsync(thread => thread.Id == id);
         }
 
@@ -46,6 +57,34 @@ namespace BlixthackByMordor.Services
         public async Task DeleteThread(ThreadModel thread)
         {
             db.Threads.Remove(thread);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task LockThread(ThreadModel thread, string username)
+        {
+            thread.ThreadLocked = true;
+            thread.ThreadLockedAt = DateTime.Now;
+            thread.ThreadLockedBy = username;
+
+            await db.SaveChangesAsync();
+
+        }
+
+        public async Task UnlockThread(ThreadModel thread)
+        {
+            thread.ThreadLocked = false;
+            thread.ThreadLockedAt = null;
+            thread.ThreadLockedBy = null;
+
+
+            await db.SaveChangesAsync();
+
+        }
+
+
+        public async Task UpdateThread(ThreadModel thread)
+        {
+            db.Threads.Update(thread);
             await db.SaveChangesAsync();
         }
     }

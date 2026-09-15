@@ -1,59 +1,145 @@
-﻿<!DOCTYPE html>
+﻿@inject CategoryService CategoryService
+@{
+    var navCategories = await CategoryService.GetCategories();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentCategoryId = currentController == "Categories" && currentAction == "Details"
+        ? ViewContext.RouteData.Values["id"]?.ToString()
+        : null;
+}
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - BlixthackByMordor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Blixtback</title>
+    <link rel="icon" href="~/favicon.ico" asp-append-version="true" />
+    <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon-32.png" asp-append-version="true" />
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm site-nav box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BlixthackByMordor</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+    <header class="site-header">
+        <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
+            <button type="button"
+                    id="nav-toggle"
+                    class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-transparent p-0 text-foreground sm:hidden"
+                    aria-controls="site-nav-menu"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 5h16M4 12h16M4 19h16" />
+                </svg>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
+            <a class="site-logo"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Index"
+               aria-label="Blixtback">
+                <img src="~/images/logo.svg" asp-append-version="true" alt="" />
+            </a>
+            <nav id="site-nav-menu" class="order-4 hidden basis-full sm:order-none sm:block sm:grow sm:basis-auto">
+                <ul class="flex flex-col gap-0.5 pt-1.5 sm:flex-row sm:items-center sm:pt-0">
+                    <li>
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    <li class="relative" data-dropdown>
+                        <button type="button"
+                                class="nav-link"
+                                data-dropdown-trigger
+                                aria-expanded="false"
+                                aria-haspopup="true">
+                            Categories
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+                        </button>
+                        <ul class="z-20 mt-1.5 max-h-80 min-w-48 overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-md sm:absolute sm:top-full sm:left-0" data-dropdown-menu hidden>
+                            @if (navCategories.Count == 0)
+                            {
+                                <li>
+                                    <span class="menu-item cursor-default text-muted-foreground">No categories yet</span>
+                                </li>
+                            }
+                            else
+                            {
+                                @foreach (var category in navCategories)
+                                {
+                                    var isCurrent = currentCategoryId == category.Id.ToString();
+                                    <li>
+                                        <a class="menu-item @(isCurrent ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : null)"
+                                           asp-controller="Categories"
+                                           asp-action="Details"
+                                           asp-route-id="@category.Id">
+                                            @category.Name
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
                     </li>
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Threads" asp-action="CreateThread">New thread</a>
-                        </li>
-                    }
                 </ul>
-            </div>
-            <div class="site-nav__auth">
+            </nav>
+            <div class="ml-auto flex flex-wrap items-center gap-2">
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <span class="site-nav__greeting">Hi @(User.Identity.Name)</span>
-                    <form asp-controller="Users"
-                          asp-action="Logout"
-                          method="post"
-                          class="site-nav__logout">
-                        <button type="submit" class="btn btn-outline-light site-nav__btn">
-                            Log out
+                    var profileInitial = Initial(User.Identity.Name);
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="btn btn-primary"
+                           asp-area=""
+                           asp-controller="Categories"
+                           asp-action="CreateCategory">
+                            New/Edit Category
+                        </a>
+                    }
+
+                    <a class="btn btn-primary"
+                       asp-area=""
+                       asp-controller="Threads"
+                       asp-action="CreateThread">
+                        New thread
+                    </a>
+                    <div class="relative" data-dropdown>
+                        <button type="button"
+                                class="avatar-link cursor-pointer border-0 bg-transparent p-0"
+                                data-dropdown-trigger
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="Account menu">
+                            <span class="avatar transition hover:border hover:border-border hover:bg-sidebar-primary" aria-hidden="true">@profileInitial</span>
                         </button>
-                    </form>
+                        <ul class="absolute top-full right-0 z-20 mt-1.5 min-w-40 overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-md"
+                            data-dropdown-menu
+                            hidden>
+                            <li>
+                                <a class="menu-item"
+                                   asp-controller="Users"
+                                   asp-action="MyProfile">
+                                    Profile
+                                </a>
+                            </li>
+                            <li>
+                                <form asp-controller="Users"
+                                      asp-action="Logout"
+                                      method="post">
+                                    <button type="submit" class="menu-item">Log out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 }
                 else
                 {
-                    <a class="btn btn-outline-light site-nav__btn"
+                    <a class="btn btn-outline btn-sm"
                        asp-controller="Users"
                        asp-action="Login">
                         Log in
                     </a>
-                    <a class="btn btn-primary site-nav__btn"
+                    <a class="btn btn-primary btn-sm"
                        asp-controller="Users"
                        asp-action="Register">
                         Register
@@ -61,22 +147,19 @@
                 }
             </div>
         </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - BlixthackByMordor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </header>
+    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4">
+        <main role="main" class="flex flex-1 flex-col py-8">
+            @RenderBody()
+        </main>
     </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js"></script>
-@await RenderSectionAsync("Scripts", required: false)
+
+    <footer class="mt-auto border-t border-border">
+        <div class="mx-auto w-full max-w-6xl px-4 py-5 text-center text-xs text-muted-foreground">
+            <p>&copy; 2026 Blixtback</p>
+        </div>
+    </footer>
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

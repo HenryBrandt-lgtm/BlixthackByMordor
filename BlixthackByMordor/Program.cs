@@ -13,7 +13,7 @@ namespace BlixthackByMordor
 
             builder.Services.AddScoped<ThreadService>();
             builder.Services.AddScoped<AnswerService>();
-
+            builder.Services.AddScoped<FavoriteAnswerService>();
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>

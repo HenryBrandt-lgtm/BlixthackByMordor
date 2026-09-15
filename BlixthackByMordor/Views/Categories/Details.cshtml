@@ -1,0 +1,35 @@
+@model IEnumerable<ThreadModel>
+@{
+    var categoryName = ViewBag.CategoryName as string ?? "Category";
+    ViewData["Title"] = categoryName;
+    var threads = Model.ToList();
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+}
+
+<partial name="_PageHeader" model="new PageHeaderViewModel { Title = categoryName, ShowNewThread = isSignedIn }" />
+
+<section data-category-card class="panel">
+    <header class="panel-header">
+        <div class="flex min-w-0 items-center gap-2">
+            <h2 class="eyebrow">@categoryName</h2>
+            <span class="count-badge">@threads.Count</span>
+        </div>
+        @if (threads.Count > 1)
+        {
+            <partial name="_SortMenu" />
+        }
+    </header>
+    @if (threads.Count == 0)
+    {
+        <p class="empty">No threads yet.</p>
+    }
+    else
+    {
+        <ul data-thread-list class="thread-list">
+            @foreach (var thread in threads)
+            {
+                <partial name="_ThreadRow" model="thread" />
+            }
+        </ul>
+    }
+</section>

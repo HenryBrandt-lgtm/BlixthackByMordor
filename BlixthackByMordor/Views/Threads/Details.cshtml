@@ -2,119 +2,238 @@
 @model ThreadModel
 @{
     ViewData["Title"] = Model.Title;
-    var answers = Model.Answers?.ToList() ?? [];
+    var answers = ViewBag.Answers as List<AnswerModel> ?? new List<AnswerModel>();
+    var replies = ViewBag.Replies as Dictionary<int, List<AnswerModel>>
+                  ?? new Dictionary<int, List<AnswerModel>>();
+    var currentPage = (int)ViewBag.CurrentPage;
+    var totalPages = (int)ViewBag.TotalPages;
     var isSignedIn = User.Identity?.IsAuthenticated == true;
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    int.TryParse(currentUserId, out var UserId);
+
     var isOwner = currentUserId != null && currentUserId == Model.UserId.ToString();
+    var isAdmin = currentUserId != null && User.IsInRole("Admin");
     var returnUrl = Url.Action("Details", "Threads", new { id = Model.Id });
+    var canReply = isSignedIn && !Model.ThreadLocked;
 }
 
-<div class="thread-page">
-    <a class="thread-page__back" asp-controller="Home" asp-action="Index">Back to threads</a>
-
-    <article class="thread-panel">
-        <header class="thread-panel__header">
-            <p class="thread-panel__category">@Model.Category.Name</p>
-            <div class="thread-panel__byline">
-                <span>@@@Model.User.Username</span>
+<div class="page">
+    <article class="panel">
+        <header class="panel-header">
+            <p class="eyebrow">@Model.Category.Name</p>
+            <div class="byline">
+                <a class="author-link"
+                   asp-controller="Users"
+                   asp-action="Profile"
+                   asp-route-id="@Model.UserId">
+                    @@@Model.User.Username
+                </a>
                 <span aria-hidden="true">&middot;</span>
-                <time datetime="@Model.CreatedAt.ToString("O")">
-                    @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                </time>
+                <time datetime="@Model.CreatedAt.ToString("O")">@FormatAge(Model.CreatedAt)</time>
             </div>
         </header>
 
-        <div class="thread-panel__post">
-            <div class="thread-panel__title-row">
-                <h1 class="thread-panel__title">@Model.Title</h1>
-                @if (isOwner)
+        <div class="panel-body">
+            <div class="mb-3.5 flex items-start justify-between gap-4">
+                <h1 class="text-xl font-medium tracking-tight leading-snug">@Model.Title</h1>
+
+                @if (isAdmin || isOwner)
                 {
-                    <form asp-controller="Threads"
-                          asp-action="Delete"
-                          asp-route-id="@Model.Id"
-                          method="post"
-                          class="thread-panel__delete"
-                          onsubmit="return confirm('Delete this thread?');">
-                        <button type="submit" class="btn btn-outline-light thread-panel__delete-btn">
-                            Delete
-                        </button>
-                    </form>
+                    <div class="flex shrink-0 items-center gap-2">
+                        @if (isAdmin)
+                        {
+                            <a asp-controller="Threads" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline">
+                                Edit
+                            </a>
+                        }
+
+                        @if (isOwner || isAdmin)
+                        {
+                            <form asp-controller="Threads"
+                                  asp-action="Delete"
+                                  asp-route-id="@Model.Id"
+                                  method="post"
+                                  class="shrink-0"
+                                  onsubmit="return confirm('Delete this thread?');">
+                                <button type="submit" class="btn btn-outline text-destructive hover:border-destructive hover:text-destructive">
+                                    Delete
+                                </button>
+                            </form>
+                        }
+                    </div>
                 }
             </div>
-            <p class="thread-panel__content">@Model.Content</p>
+            <p class="prose-body">@Model.Content</p>
         </div>
 
-        <section class="thread-panel__answers" aria-labelledby="answers-heading">
-            <div class="thread-panel__answers-head">
-                <h2 id="answers-heading" class="thread-panel__answers-title">Answers</h2>
-                <span class="thread-panel__count">@answers.Count</span>
+        <section class="answers" aria-labelledby="answers-heading">
+            <div class="answers-head">
+                <h2 id="answers-heading" class="section-title">Answers</h2>
+                <span class="answers-count">@ViewBag.TotalAnswers</span>
             </div>
 
             @if (answers.Count == 0)
             {
-                <p class="thread-panel__empty">No answers yet. Be the first to reply.</p>
+                <p class="py-6 text-sm text-muted-foreground">No answers yet. Be the first to reply.</p>
             }
             else
             {
-                <ol class="answer-list">
-                    @foreach (var answer in answers)
+                <ol class="comment-list">
+                    @foreach (var answer in answers.Where(item => item.ReplyId == null))
                     {
-                        var initial = string.IsNullOrEmpty(answer.User.Username)
-                            ? "?"
-                            : answer.User.Username[0].ToString().ToUpperInvariant();
-                        <li class="answer-item">
-                            <div class="answer-item__avatar" aria-hidden="true">@initial</div>
-                            <div class="answer-item__body">
-                                <div class="thread-panel__byline">
-                                    <span>@@@answer.User.Username</span>
-                                    <span aria-hidden="true">&middot;</span>
-                                    <time datetime="@answer.CreatedAt.ToString("O")">
-                                        @answer.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                                    </time>
-                                </div>
-                                <p class="answer-item__content">@answer.Content</p>
-                            </div>
-                        </li>
+                        var nested = replies.GetValueOrDefault(answer.Id) ?? new List<AnswerModel>();
+                        <partial name="_Comment" model="CommentViewModel.FromAnswer(answer, nested, canReply, UserId, isAdmin)" />
                     }
                 </ol>
+                @if (totalPages > 1)
+                {
+                    const int siblingCount = 1;
+                    var startPage = Math.Max(1, currentPage - siblingCount);
+                    var endPage = Math.Min(totalPages, currentPage + siblingCount);
+
+                    <nav aria-label="Answer pages">
+                        <ul class="my-4 flex flex-wrap gap-1.5">
+                            <li>
+                                <a class="page-num @(currentPage == 1 ? "page-num-disabled" : null)" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@(currentPage - 1)">
+                                    &laquo;
+                                </a>
+                            </li>
+                            @if (startPage > 1)
+                            {
+                                <li>
+                                    <a class="page-num" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="1">1</a>
+                                </li>
+                                if (startPage > 2)
+                                {
+                                    <li>
+                                        <span class="page-num page-num-disabled">...</span>
+                                    </li>
+                                }
+                            }
+
+                            @for (var p = startPage; p <= endPage; p++)
+                            {
+                                <li>
+                                    <a class="page-num @(p == currentPage ? "page-num-current" : null)" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@p">
+                                        @p
+                                    </a>
+                                </li>
+                            }
+                            @if (endPage < totalPages)
+                            {
+                                if (endPage < totalPages - 1)
+                                {
+                                    <li>
+                                        <span class="page-num page-num-disabled">...</span>
+                                    </li>
+                                }
+                                <li>
+                                    <a class="page-num" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@totalPages">@totalPages</a>
+                                </li>
+                            }
+
+                            <li>
+                                <a class="page-num @(currentPage == totalPages ? "page-num-disabled" : null)" asp-action="Details" asp-route-id="@Model.Id" asp-route-page="@(currentPage + 1)">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
             }
         </section>
 
-        <section class="thread-panel__composer" aria-labelledby="reply-heading">
-            @if (isSignedIn)
+        <section class="border-t border-border px-5 pt-4 pb-5" aria-labelledby="reply-heading">
+            @if (Model.ThreadLocked)
             {
-                <h2 id="reply-heading" class="thread-panel__composer-title">Add an answer</h2>
-                <p class="thread-panel__composer-meta">Posting as @@@User.Identity!.Name</p>
-                <form asp-controller="Answers" asp-action="Create" method="post">
+                <div class="thread-locked">
+                    <span class="thread-locked-icon" aria-hidden="true">
+                        <partial name="_IconLock" />
+                    </span>
+                    <div class="thread-locked-body">
+                        <div class="thread-locked-head">
+                            <div class="min-w-0">
+                                <h2 id="reply-heading" class="section-title">This thread is locked</h2>
+                                <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+                                    New answers and replies are closed.
+                                </p>
+                                <div class="byline mt-2">
+                                    <span>
+                                        Locked by
+                                        <span class="font-medium text-foreground">@@@Model.ThreadLockedBy</span>
+                                    </span>
+                                    @if (Model.ThreadLockedAt is DateTime lockedAt)
+                                    {
+                                        <span aria-hidden="true">&middot;</span>
+                                        <time datetime="@lockedAt.ToString("O")">@FormatAge(lockedAt)</time>
+                                    }
+                                </div>
+                            </div>
+                            @if (isAdmin)
+                            {
+                                <form asp-controller="Threads"
+                                      asp-action="Unlock"
+                                      asp-route-id="@Model.Id"
+                                      method="post"
+                                      class="shrink-0"
+                                      onsubmit="return confirm('Are you sure you want to UNLOCK the thread?')">
+                                    <button type="submit" class="btn btn-outline btn-sm gap-1.5">
+                                        <partial name="_IconUnlock" />
+                                        Unlock
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (isSignedIn)
+            {
+                <h2 id="reply-heading" class="section-title mb-3">Add an answer</h2>
+                <form id="create-answer-form" asp-controller="Answers" asp-action="Create" method="post">
                     <input type="hidden" name="threadId" value="@Model.Id" />
-                    <label class="visually-hidden" for="content">Your answer</label>
+                    <label class="sr-only" for="content">Your answer</label>
                     <textarea id="content"
                               name="content"
-                              class="form-control thread-panel__textarea"
-                              rows="4"
+                              class="field mb-3"
+                              rows="3"
                               maxlength="1000"
                               required
                               placeholder="Write your answer..."></textarea>
-                    <button type="submit" class="btn btn-primary">Post answer</button>
                 </form>
+                <div class="flex items-center justify-between">
+                    <button type="submit" form="create-answer-form" class="btn btn-primary">Post answer</button>
+                    @if (isAdmin)
+                    {
+                        <form asp-controller="Threads"
+                              asp-action="Lock"
+                              asp-route-id="@Model.Id"
+                              method="post"
+                              onsubmit="return confirm('Are you sure you want to LOCK the thread?')">
+                            <button type="submit" class="btn btn-outline comment-icon" aria-label="Lock thread">
+                                <partial name="_IconLock" />
+                            </button>
+                        </form>
+                    }
+                </div>
             }
             else
             {
-                <div class="answer-gate">
+                <div class="flex flex-col gap-4">
                     <div>
-                        <h2 id="reply-heading" class="thread-panel__composer-title">Want to reply?</h2>
-                        <p class="answer-gate__text">
+                        <h2 id="reply-heading" class="section-title mb-1">Want to reply?</h2>
+                        <p class="max-w-lg text-sm leading-relaxed text-muted-foreground">
                             Sign in to post an answer. Anyone can read the discussion.
                         </p>
                     </div>
-                    <div class="answer-gate__actions">
+                    <div class="form-actions">
                         <a class="btn btn-primary"
                            asp-controller="Users"
                            asp-action="Login"
                            asp-route-returnUrl="@returnUrl">
                             Log in to answer
                         </a>
-                        <a class="btn btn-outline-light answer-gate__secondary"
+                        <a class="btn btn-outline"
                            asp-controller="Users"
                            asp-action="Register"
                            asp-route-returnUrl="@returnUrl">
