@@ -8,6 +8,9 @@
 .env.example
 docker-compose.yml
 
+# JetBrains Rider / IntelliJ
+.idea/
+
 # User-specific files
 *.rsuser
 *.suo
