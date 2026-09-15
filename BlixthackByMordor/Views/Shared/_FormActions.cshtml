@@ -1,0 +1,21 @@
+@model FormActionsViewModel
+<div class="form-actions">
+    <button type="submit" class="btn btn-primary">@Model.SubmitText</button>
+    @if (Model.CancelRouteId is null)
+    {
+        <a class="btn btn-outline"
+           asp-controller="@Model.CancelController"
+           asp-action="@Model.CancelAction">
+            @Model.CancelText
+        </a>
+    }
+    else
+    {
+        <a class="btn btn-outline"
+           asp-controller="@Model.CancelController"
+           asp-action="@Model.CancelAction"
+           asp-route-id="@Model.CancelRouteId">
+            @Model.CancelText
+        </a>
+    }
+</div>
