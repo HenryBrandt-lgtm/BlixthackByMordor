@@ -3,90 +3,59 @@
     ViewData["Title"] = "New Category";
 }
 
-<div class="thread-page">
-    <article class="thread-panel">
-        @if (TempData["SuccessMessage"] is string message)
-        {
-            <div class="alert alert-success">
-                @message
-            </div>
-        }
-        <header class="thread-panel__header">
-            <p class="thread-panel__category">New category</p>
+<div class="page">
+    <article class="panel">
+        <partial name="_Flash" model='"mx-5 mt-5 mb-0"' />
+        <header class="panel-header">
+            <p class="eyebrow">New category</p>
         </header>
 
         <form asp-controller="Categories"
               asp-action="CreateCategory"
               method="post"
-              class="thread-compose">
-
-            <div class="thread-compose__field">
-                <label class="thread-compose__label" for="categoryName">Category name</label>
-
+              class="panel-body">
+            <div class="field-group">
+                <label class="field-label" for="categoryName">Category name</label>
                 <input id="categoryName"
                        name="categoryName"
                        type="text"
-                       class="form-control thread-compose__control"
+                       class="field"
                        maxlength="100"
                        required
                        placeholder="Enter category name" />
-                @Html.ValidationMessage("categoryName")
+                @Html.ValidationMessage("categoryName", "", new { @class = "field-error" })
             </div>
 
-            <div class="thread-compose__actions">
-                <button type="submit" class="btn btn-primary">Create category</button>
-
-                <a class="btn btn-outline-light answer-gate__secondary"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Cancel
-                </a>
-            </div>
+            <partial name="_FormActions" model='FormActionsViewModel.CancelHome("Create category")' />
         </form>
 
-        
-
-        <span></span>
-
-
-
-        <header class="thread-panel__header" style="margin-top: 20px;">
-            <p class="thread-panel__category">Edit category</p>
+        <header class="panel-header border-t">
+            <p class="eyebrow">Edit category</p>
         </header>
         <form asp-controller="Categories"
               asp-action="EditCategory"
               method="post"
-              class="thread-compose">
-
-            <select name="categoryId"
-                    class="form-select form-select-sm w-auto bg-dark text-white">
-                
-                @foreach (var category in Model)
-                {
-                    <option value="@category.Id">@category.Name</option>
-                }
-            </select>
-            <div class="thread-compose__field">
-                <label class="thread-compose__label" for="newCategoryName"></label>
+              class="panel-body">
+            <div class="field-group">
+                <select name="categoryId" class="field">
+                    @foreach (var category in Model)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="field-group">
+                <label class="field-label" for="newCategoryName">New category name</label>
                 <input id="newCategoryName"
                        name="newCategoryName"
                        type="text"
-                       class="form-control thread-compose__control"
+                       class="field"
                        maxlength="100"
                        required
                        placeholder="Enter new category name" />
-                @Html.ValidationMessage("newCategoryName")
+                @Html.ValidationMessage("newCategoryName", "", new { @class = "field-error" })
             </div>
-            <div class="thread-compose__actions">
-                <button type="submit" class="btn btn-primary">Edit Category</button>
-
-                <a class="btn btn-outline-light answer-gate__secondary"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Cancel
-                </a>
-            </div>
+            <partial name="_FormActions" model='FormActionsViewModel.CancelHome("Edit Category")' />
         </form>
-
     </article>
 </div>
