@@ -78,7 +78,12 @@
   }
 
   html {
-    @apply relative h-full bg-background font-sans text-sm antialiased md:text-base after:content-[''] after:absolute after:inset-0 after:z-0 after:pointer-events-none after:bg-background/14 after:backdrop-blur-xl;
+    @apply relative h-full bg-background font-sans text-sm antialiased md:text-base;
+    @apply after:content-[''] after:bg-[url('../images/snooker-background.webp')] after:bg-cover after:bg-center after:grayscale after:opacity-15 after:fixed after:inset-0 after:z-0 after:pointer-events-none;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
