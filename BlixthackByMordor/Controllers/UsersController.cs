@@ -99,24 +99,7 @@ LoginViewModel model, string? returnUrl)
                 return View(model);
             }
 
-            var claims = new List<Claim>()
-            {
-                new Claim( ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Name,user.Username),
-                new Claim(ClaimTypes.Email,user.Email),
-            };
-
-            if (user.IsAdmin)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-            }
-
-            var identity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var princpal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, princpal);
+            await SignInUserAsync(user);
 
             return RedirectAfterLogin(returnUrl);
 
@@ -242,6 +225,11 @@ LoginViewModel model, string? returnUrl)
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
             };
+
+            if (user.IsAdmin)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
 
             var identity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
