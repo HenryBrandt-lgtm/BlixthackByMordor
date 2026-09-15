@@ -1,0 +1,27 @@
+@model ActivityRowViewModel
+<li @(Model.FavoriteAnswerId is not null ? "data-thread-item" : null)>
+    <a class="thread-row"
+       asp-controller="Threads"
+       asp-action="Details"
+       asp-route-id="@Model.ThreadId">
+        <div class="min-w-0">
+            <h3 class="thread-row-title">@Model.Title</h3>
+            <div class="byline">
+                <span>@Model.Byline</span>
+                <span aria-hidden="true">&middot;</span>
+                <time datetime="@Model.CreatedAt.ToString("O")">@FormatAge(Model.CreatedAt)</time>
+            </div>
+        </div>
+    </a>
+    @if (Model.FavoriteAnswerId is int answerId)
+    {
+        <label class="favorite mx-4 mb-3">
+            <input type="checkbox"
+                   class="favorite-checkbox peer sr-only"
+                   data-answer-id="@answerId"
+                   checked />
+            <span class="favorite-star">★</span>
+            <span class="peer-checked:text-favorite">Favorite</span>
+        </label>
+    }
+</li>

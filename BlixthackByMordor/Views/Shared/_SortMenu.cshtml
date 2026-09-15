@@ -1,0 +1,26 @@
+<div class="relative ml-auto" data-dropdown data-sort-dropdown>
+    <button type="button"
+            class="sort-pill"
+            data-dropdown-trigger
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Sort threads">
+        <span data-sort-label>Latest</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+        </svg>
+    </button>
+    <ul class="absolute top-full right-0 z-20 mt-1.5 min-w-40 overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-md"
+        data-dropdown-menu
+        hidden>
+        <li>
+            <button type="button" class="menu-item is-current" data-sort="latest">Latest</button>
+        </li>
+        <li>
+            <button type="button" class="menu-item" data-sort="oldest">Oldest</button>
+        </li>
+        <li>
+            <button type="button" class="menu-item" data-sort="most-answers">Most replies</button>
+        </li>
+    </ul>
+</div>
