@@ -1,22 +1,19 @@
-@model BlixthackByMordor.ViewModels.ProfileViewModel
+@model ProfileViewModel
 @{
     ViewData["Title"] = Model.IsOwner ? "Your profile" : Model.Username;
-    var initial = string.IsNullOrEmpty(Model.Username)
-        ? "?"
-        : Model.Username[0].ToString().ToUpperInvariant();
 }
 
-<div class="thread-page profile-page">
-    <article class="thread-panel">
-        <header class="thread-panel__header">
-            <p class="thread-panel__category">@(Model.IsOwner ? "Your profile" : "Profile")</p>
+<div class="mx-auto mb-8 flex w-full max-w-2xl flex-col gap-5 md:max-w-4xl">
+    <article class="panel">
+        <header class="panel-header">
+            <p class="eyebrow">@(Model.IsOwner ? "Your profile" : "Profile")</p>
         </header>
 
-        <div class="profile-hero">
-            <div class="profile-hero__avatar" aria-hidden="true">@initial</div>
-            <div class="profile-hero__meta">
-                <h1 class="profile-hero__name">@Model.Username</h1>
-                <p class="profile-hero__since">
+        <div class="flex items-center gap-3.5 px-5 pt-5">
+            <div class="avatar size-12 text-lg" aria-hidden="true">@Initial(Model.Username)</div>
+            <div>
+                <h1 class="text-xl font-medium tracking-tight leading-tight">@Model.Username</h1>
+                <p class="text-xs text-muted-foreground">
                     Member since
                     <time datetime="@Model.CreatedAt.ToString("O")">
                         @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")
@@ -30,214 +27,94 @@
             <form asp-controller="Users"
                   asp-action="MyProfile"
                   method="post"
-                  class="thread-compose">
-                <div asp-validation-summary="ModelOnly" class="thread-compose__errors"></div>
+                  class="panel-body">
+                <div asp-validation-summary="ModelOnly"></div>
 
                 @if (TempData["ProfileSaved"] is true)
                 {
-                    <p class="thread-compose__success" role="status">Your profile has been updated.</p>
+                    <p class="alert-success" role="status">Your profile has been updated.</p>
                 }
 
-                <div class="thread-compose__field">
-                    <label asp-for="AboutMe" class="thread-compose__label"></label>
+                <div class="field-group">
+                    <label asp-for="AboutMe" class="field-label"></label>
                     <textarea asp-for="AboutMe"
-                              class="form-control thread-compose__control thread-compose__textarea profile-about__input"
+                              class="field min-h-24 resize-y"
                               maxlength="500"
                               rows="4"
                               placeholder="Tell others a bit about yourself"></textarea>
-                    <p class="thread-compose__hint">Optional. Up to 500 characters. This is visible on your public profile.</p>
-                    <span asp-validation-for="AboutMe" class="thread-compose__field-error"></span>
+                    <p class="field-hint">Optional. Up to 500 characters. This is visible on your public profile.</p>
+                    <span asp-validation-for="AboutMe" class="field-error"></span>
                 </div>
 
-                <div class="thread-compose__field">
-                    <label asp-for="Username" class="thread-compose__label"></label>
+                <div class="field-group">
+                    <label asp-for="Username" class="field-label"></label>
                     <input asp-for="Username"
-                           class="form-control thread-compose__control"
+                           class="field"
                            autocomplete="username"
                            maxlength="50" />
-                    <span asp-validation-for="Username" class="thread-compose__field-error"></span>
+                    <span asp-validation-for="Username" class="field-error"></span>
                 </div>
 
-                <div class="thread-compose__field">
-                    <label asp-for="Email" class="thread-compose__label"></label>
+                <div class="field-group">
+                    <label asp-for="Email" class="field-label"></label>
                     <input asp-for="Email"
-                           class="form-control thread-compose__control"
+                           class="field"
                            autocomplete="email" />
-                    <span asp-validation-for="Email" class="thread-compose__field-error"></span>
+                    <span asp-validation-for="Email" class="field-error"></span>
                 </div>
 
-                <fieldset class="profile-password">
-                    <legend class="profile-password__legend">Change password</legend>
-                    <p class="thread-compose__hint">Leave these blank to keep your current password.</p>
+                <fieldset class="mb-5 rounded-lg border border-border px-4 pt-3.5 pb-1">
+                    <legend class="px-1 text-sm font-medium text-foreground">Change password</legend>
+                    <p class="mb-4 text-xs text-muted-foreground">Leave these blank to keep your current password.</p>
 
-                    <div class="thread-compose__field">
-                        <label asp-for="CurrentPassword" class="thread-compose__label"></label>
+                    <div class="field-group">
+                        <label asp-for="CurrentPassword" class="field-label"></label>
                         <input asp-for="CurrentPassword"
-                               class="form-control thread-compose__control"
+                               class="field"
                                autocomplete="current-password" />
-                        <span asp-validation-for="CurrentPassword" class="thread-compose__field-error"></span>
+                        <span asp-validation-for="CurrentPassword" class="field-error"></span>
                     </div>
 
-                    <div class="thread-compose__field">
-                        <label asp-for="NewPassword" class="thread-compose__label"></label>
+                    <div class="field-group">
+                        <label asp-for="NewPassword" class="field-label"></label>
                         <input asp-for="NewPassword"
-                               class="form-control thread-compose__control"
+                               class="field"
                                autocomplete="new-password"
                                placeholder="At least 6 characters" />
-                        <span asp-validation-for="NewPassword" class="thread-compose__field-error"></span>
+                        <span asp-validation-for="NewPassword" class="field-error"></span>
                     </div>
 
-                    <div class="thread-compose__field">
-                        <label asp-for="ConfirmNewPassword" class="thread-compose__label"></label>
+                    <div class="field-group">
+                        <label asp-for="ConfirmNewPassword" class="field-label"></label>
                         <input asp-for="ConfirmNewPassword"
-                               class="form-control thread-compose__control"
+                               class="field"
                                autocomplete="new-password" />
-                        <span asp-validation-for="ConfirmNewPassword" class="thread-compose__field-error"></span>
+                        <span asp-validation-for="ConfirmNewPassword" class="field-error"></span>
                     </div>
                 </fieldset>
 
-                <div class="thread-compose__actions">
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                    <a class="btn btn-outline-light answer-gate__secondary"
-                       asp-controller="Home"
-                       asp-action="Index">
-                        Cancel
-                    </a>
-                </div>
+                <partial name="_FormActions" model='FormActionsViewModel.CancelHome("Save changes")' />
             </form>
         }
         else
         {
-            <section class="profile-about" aria-labelledby="about-heading">
-                <h2 id="about-heading" class="profile-about__title">About me</h2>
+            <section class="px-5 pt-4 pb-6" aria-labelledby="about-heading">
+                <h2 id="about-heading" class="section-title mb-2">About me</h2>
                 @if (string.IsNullOrWhiteSpace(Model.AboutMe))
                 {
-                    <p class="profile-about__empty">This user has not written an about me yet.</p>
+                    <p class="text-sm text-muted-foreground">This user has not written an about me yet.</p>
                 }
                 else
                 {
-                    <p class="profile-about__text">@Model.AboutMe</p>
+                    <p class="prose-body">@Model.AboutMe</p>
                 }
             </section>
         }
     </article>
 
-    <div class="profile-activity">
-    <section class="thread-panel" aria-labelledby="profile-threads-heading">
-        <header class="thread-panel__header">
-            <h2 id="profile-threads-heading" class="thread-panel__category">Threads</h2>
-            <span class="thread-panel__count">@Model.Threads.Count</span>
-        </header>
-        @if (Model.Threads.Count == 0)
-        {
-            <p class="profile-activity__empty">No threads yet.</p>
-        }
-        else
-        {
-            <ul class="thread-list">
-                @foreach (var thread in Model.Threads)
-                {
-                    <li class="thread-list__item">
-                        <a class="thread-item"
-                           asp-controller="Threads"
-                           asp-action="Details"
-                           asp-route-id="@thread.Id">
-                            <div class="thread-item__content">
-                                <h3 class="thread-item__title">@thread.Title</h3>
-                                <div class="thread-item__byline">
-                                    <span>@thread.CategoryName</span>
-                                    <span aria-hidden="true">&middot;</span>
-                                    <time datetime="@thread.CreatedAt.ToString("O")">
-                                        @thread.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                                    </time>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                }
-            </ul>
-        }
-    </section>
-
-    <section class="thread-panel" aria-labelledby="profile-answers-heading">
-        <header class="thread-panel__header">
-            <h2 id="profile-answers-heading" class="thread-panel__category">Answers</h2>
-            <span class="thread-panel__count">@Model.Answers.Count</span>
-        </header>
-        @if (Model.Answers.Count == 0)
-        {
-            <p class="profile-activity__empty">No answers yet.</p>
-        }
-        else
-        {
-            <ul class="thread-list">
-                @foreach (var answer in Model.Answers)
-                {
-                    <li class="thread-list__item">
-                        <a class="thread-item"
-                           asp-controller="Threads"
-                           asp-action="Details"
-                           asp-route-id="@answer.ThreadId">
-                            <div class="thread-item__content">
-                                <h3 class="thread-item__title">@answer.Excerpt</h3>
-                                <div class="thread-item__byline">
-                                    <span>on @answer.ThreadTitle</span>
-                                    <span aria-hidden="true">&middot;</span>
-                                    <time datetime="@answer.CreatedAt.ToString("O")">
-                                        @answer.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                                    </time>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                }
-            </ul>
-        }
-    </section> 
-    <section class="thread-panel" aria-labelledby="profile-answers-heading">
-        <header class="thread-panel__header">
-            <h2 id="profile-answers-heading" class="thread-panel__category">Favorite answers</h2>
-                <span id="favorite-count" class="thread-panel__count">@Model.FavoriteAnswers.Count</span>
-        </header>
-            @if (Model.FavoriteAnswers.Count == 0)
-        {
-            <p class="profile-activity__empty">No answers yet.</p>
-        }
-        else
-        {
-            <ul class="thread-list">
-                    @foreach (var answer in Model.FavoriteAnswers)
-                {
-                    <li class="thread-list__item">
-                        <a class="thread-item"
-                           asp-controller="Threads"
-                           asp-action="Details"
-                           asp-route-id="@answer.ThreadId">
-                            <div class="thread-item__content">
-                                <h3 class="thread-item__title">@answer.Excerpt</h3>
-                                <div class="thread-item__byline">
-                                    <span>on @answer.ThreadTitle</span>
-                                    <span aria-hidden="true">&middot;</span>
-                                    <time datetime="@answer.CreatedAt.ToString("O")">
-                                        @answer.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
-                                    </time>
-                                </div>
-                                
-                            </div>
-                        </a>
-                        <label class="favorite-toggle">
-                            <input type="checkbox"
-                                   class="favorite-checkbox"
-                                   data-answer-id="@answer.AnswerId"
-                                   checked />
-
-                            <span class="favorite-icon">★</span>
-                            <span class="favorite-text">Favorite</span>
-                        </label>
-                    </li>
-                }
-            </ul>
-        }
-    </section>
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-start">
+        <partial name="_ProfileList" model="ProfileListViewModel.Threads(Model.Threads)" />
+        <partial name="_ProfileList" model="ProfileListViewModel.Answers(Model.Answers)" />
+        <partial name="_ProfileList" model="ProfileListViewModel.Favorites(Model.FavoriteAnswers)" />
     </div>
 </div>

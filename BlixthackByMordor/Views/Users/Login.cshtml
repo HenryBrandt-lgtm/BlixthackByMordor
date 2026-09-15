@@ -3,52 +3,46 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="thread-page auth-page">
-    <article class="thread-panel">
-        <header class="thread-panel__header">
-            <p class="thread-panel__category">Log in</p>
+<div class="auth-page">
+    <article class="panel">
+        <header class="panel-header">
+            <p class="eyebrow">Log in</p>
         </header>
 
         <form asp-controller="Users"
               asp-action="Login"
               method="post"
-              class="thread-compose">
+              class="panel-body">
             <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
-            <div asp-validation-summary="ModelOnly" class="thread-compose__errors"></div>
+            <div asp-validation-summary="ModelOnly"></div>
 
-            <div class="thread-compose__field">
-                <label asp-for="Email" class="thread-compose__label"></label>
+            <div class="field-group">
+                <label asp-for="Email" class="field-label"></label>
                 <input asp-for="Email"
-                       class="form-control thread-compose__control"
+                       class="field"
                        autocomplete="email"
                        placeholder="you@example.com" />
-                <span asp-validation-for="Email" class="thread-compose__field-error"></span>
+                <span asp-validation-for="Email" class="field-error"></span>
             </div>
 
-            <div class="thread-compose__field">
-                <label asp-for="Password" class="thread-compose__label"></label>
+            <div class="field-group">
+                <label asp-for="Password" class="field-label"></label>
                 <input asp-for="Password"
                        type="password"
-                       class="form-control thread-compose__control"
+                       class="field"
                        autocomplete="current-password"
                        placeholder="Your password" />
-                <span asp-validation-for="Password" class="thread-compose__field-error"></span>
+                <span asp-validation-for="Password" class="field-error"></span>
             </div>
 
-            <div class="thread-compose__actions">
-                <button type="submit" class="btn btn-primary">Log in</button>
-                <a class="btn btn-outline-light answer-gate__secondary"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Cancel
-                </a>
-            </div>
+            <partial name="_FormActions" model='FormActionsViewModel.CancelHome("Log in")' />
         </form>
 
-        <p class="auth-page__footer">
+        <p class="empty pt-0">
             No account yet?
-            <a asp-controller="Users"
+            <a class="link-strong"
+               asp-controller="Users"
                asp-action="Register"
                asp-route-returnUrl="@ViewData["ReturnUrl"]">
                 Register
